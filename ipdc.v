@@ -16,20 +16,33 @@ module ipdc (                       //Don't modify interface
 // ---------------------------------------------------------------------------
 // ---- Add your own wires and registers here if needed ---- //
 
+reg 			 o_in_ready_w, o_in_ready_r;
+reg        o_out_valid_w, o_out_valid_r;
+reg [23:0] o_out_data_w, o_out_data_r;
 
+reg        i_op_valid_w;
+reg [ 2:0] i_op_mode_w;
+reg 			 i_in_valid_w;
+reg [23:0] i_in_data_w;      
 
+reg [ 2:0] fsm_state;
 // ---------------------------------------------------------------------------
 // Continuous Assignment
 // ---------------------------------------------------------------------------
 // ---- Add your own wire data assignments here if needed ---- //
 
-
+assign o_in_ready = o_in_ready_r;
+assign o_out_valid = o_out_valid_r;
+assign o_out_data = o_out_data_r
 
 // ---------------------------------------------------------------------------
 // Combinational Blocks
 // ---------------------------------------------------------------------------
 // ---- Write your conbinational block design here ---- //
-
+always(fsm_state)begin
+	case(fsm_state)
+	
+end
 
 
 // ---------------------------------------------------------------------------
@@ -37,6 +50,20 @@ module ipdc (                       //Don't modify interface
 // ---------------------------------------------------------------------------
 // ---- Write your sequential block design here ---- //
 
+//All outputs should be synchronized at clock rising edge.
+//reset signal
+always@(posedge i_clk or negedge i_rst_n)begin   
+	if(!i_rst_n)begin   
+		
+	end
+	else begin
+		
+	end
+end
 
+//All inputs are synchronized with the negative edge clock
+always(@negedge i_clk)begin
+	if 
+end
 
 endmodule
