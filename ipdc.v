@@ -20,7 +20,16 @@ module ipdc (                       //Don't modify interface
 integer register_no, temp_register_no;
 integer i, j;
 integer counter_for_loading, temp_for_counter;
+//integer origin_point;
+//integer temp_for_origin_point;
+reg [5:0] origin_point;
+reg [5:0] temp_for_origin_point;
 
+//which position to output
+reg [5:0] out_position;
+
+//output cycles counters
+reg  [4:0]  output_counter;
 
 //output register
 reg 	   o_in_ready_w, o_in_ready_r;
@@ -45,6 +54,12 @@ reg [23:0] output_img [0:15];
 //loading flag
 reg        loading_flag;
 
+//state choosing flag
+reg        state_change;
+
+//decide jump to output or jump to process
+reg        output_flag;
+
 // ---------------------------------------------------------------------------
 // Continuous Assignment
 // ---------------------------------------------------------------------------
@@ -58,7 +73,10 @@ assign o_out_data = o_out_data_r
 // Combinational Blocks
 // ---------------------------------------------------------------------------
 // ---- Write your conbinational block design here ---- //
-always(fsm_state)begin
+always(state_change)begin
+	
+	//o_out_valid_w = 1'b1;
+
 	case(fsm_state)
 	3'b000:begin
 		//initial state, never in this state,do nothing
@@ -75,9 +93,21 @@ always(fsm_state)begin
 			end
 			3'b001:begin
 				//origin right shift, need display
+				loading_flag = 0;
+				temp_for_origin_point = origin_point + 6'b1;
+				origin_point = temp_for_origin_point;
+				//check if output will exceeds the image boundary
+				if((origin_point % 6'd8) > 6'd4)begin
+					//output will exceed, retain the same
+					temp_for_origin_point = origin_point - 6'b1;
+					origin_point = temp_for_origin_point;
+				end
+				output_flag = 1;
+				
 			end
 			3'b010:begin
 				//origin down shift, need display
+				temp_for_origin_point = origin_point 
 			end
 			3'b011:begin
 				//default origin, need display
@@ -96,7 +126,8 @@ always(fsm_state)begin
 			end
 		end
 		1'b0:begin
-			//case when i_op_mode is not valid
+			//case when i_op_mode is not valid, re-choosing
+			fsm_state = 3'b000;
 		end
 	end
 	3'b010:begin
@@ -107,12 +138,31 @@ always(fsm_state)begin
 			register_no = temp_register_no;
 		end
 		else begin
+			//loading finish
 			loading_flag = 1'b0;
+			register_no = 0;
+			temp_register_no = 0;
 		end
 	end
 	3'b011:begin
-		//loading finish, set o_out_valid state
+		//loading state finish, set o_out_valid state only 1cycles
 		o_out_valid_w = 1'b1;
+	end
+	3'b100:begin
+		//processing state
+		if(output_flag==1)begin
+			output_counter = 5'b00000;
+		end
+		else begin
+			//process the image
+		end
+	end
+	3'b101:begin
+		//output 16 cycles state
+		if(output_counter != 5'b10000)begin
+			o_out_valid_w = 1'b1;
+			out_position = (output_counter % 5'd4) * 5'd4 + 
+		end
 	end
 	default:begin
 		
@@ -151,6 +201,18 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		input_img     <= 0;
 		output_img    <= 0; 
 
+		register_no          <= 0;
+		temp_register_no     <= 0;
+
+		state_change  <= 0;
+
+		origin_point <= 0;
+		temp_for_origin_point <= 0;
+
+		output_flag <= 0;
+
+		output_counter <=0;
+
 		for(i=0; i<16; i++) output_img[i] <= 0;
 		for(i=0; i<64; i++) input_img[j]  <= 0;
 	end
@@ -168,6 +230,8 @@ always(@negedge i_clk)begin
 	 i_in_valid_w <= i_in_valid;
 	 i_in_data_w  <= i_in_data;
 	 
+	 state_change <= ~state_change;
+
 	 if(fsm_state == 3'b000)begin
 		 //"initial state" jump to "choosing operation mode state"
 		 fsm_state <= 3'b001;
@@ -177,7 +241,8 @@ always(@negedge i_clk)begin
 		 fsm_state <= 3'b010;
 	 end
 	 else if(fsm_state == 3'b001 && loading_flag == 0)begin
-		 //from "choosing operation mode state" jump to "?????????????"
+		 //from "choosing operation mode state" jump to "processing state"
+		 fsm_state <= 3'b100;
 	 end
 	 else if(fsm_state == 3'b010 && loading_flag !=0)begin
 		 //from "loading state" jump to "loading state", keep loading
@@ -191,6 +256,17 @@ always(@negedge i_clk)begin
 		 //from "load set o_out_valid state"  jump to "choosing operation mode state"
 		 fsm_state <= 3'b001;
 	 end
+	 else if(fsm_state == 3'b100 && output_flag != 0)begin
+		 //from "processing state" jump to "output 16cycle state"
+		 fsm_state <= 101;
+	 end
+	 else if(fsm_state == 3'b100 && output_flag == 0)begin
+		 //from "processing state" jump to ""
+	 end
+	 else if(fsm_state == 3'b101)begin
+		 //from output 16cycles state jump to
+	 end
+
 end
 
 endmodule
