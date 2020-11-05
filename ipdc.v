@@ -28,9 +28,13 @@ reg [5:0] temp_for_origin_point;
 //which position to output
 reg [5:0] out_position;
 reg [5:0] position_bias;
+//16 cycles output
+reg       continue_output_end;
+
 
 //output cycles counters
 reg  [4:0]  output_counter;
+reg  [4:0]  temp_output_counter;
 
 //output register
 reg 	   o_in_ready_w, o_in_ready_r;
@@ -161,11 +165,26 @@ always(state_change)begin
 	3'b101:begin
 		//output 16 cycles state
 		if(output_counter != 5'b10000)begin
+			//calculate the bias relative to the origin point
 			position_bias = (output_counter / 5'd4) * 5'd4 + output_counter;
+			//decide the position to output
 			out_position = position_bias + origin_point;
+			
 			o_out_valid_w = 1'b1;
 			o_out_data_w = input_img[out_position];
+			
+			temp_output_counter = output_counter + 5'b00001;
+			output_counter = temp_output_counter;
+
+			//16cycles is "not" finished
+			continue_output_end = 1'b0;
 		end
+		else begin
+			//16 cycles is finished
+			o_out_valid_w = 1'b0;
+			continue_output_end = 1'b1;
+		end
+
 	end
 	default:begin
 		
@@ -215,6 +234,11 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		output_flag <= 0;
 
 		output_counter <=0;
+
+		out_position <= 0;
+		position_bias <= 0;
+
+		continue_output_end <= 0;
 
 		for(i=0; i<16; i++) output_img[i] <= 0;
 		for(i=0; i<64; i++) input_img[j]  <= 0;
@@ -266,8 +290,14 @@ always(@negedge i_clk)begin
 	 else if(fsm_state == 3'b100 && output_flag == 0)begin
 		 //from "processing state" jump to ""
 	 end
-	 else if(fsm_state == 3'b101)begin
-		 //from output 16cycles state jump to
+	 else if(fsm_state == 3'b101 && continue_output_end !=0)begin
+		 //16 cycles is finished
+		 //from output 16 cycles state jump to
+	 end
+	 else if(fsm_state == 3'b101 && continue_output_end ==0)begin
+		 //16 cycles is not finished, keeping output
+		 //from "output 16 cycles state" jump to "output 16 cycles state" , keeping output
+		 fsm_state <= 3'b101;
 	 end
 
 end
