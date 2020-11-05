@@ -27,6 +27,7 @@ reg [5:0] temp_for_origin_point;
 
 //which position to output
 reg [5:0] out_position;
+reg [5:0] position_bias;
 
 //output cycles counters
 reg  [4:0]  output_counter;
@@ -92,7 +93,7 @@ always(state_change)begin
 				loading_flag = 1'b1;
 			end
 			3'b001:begin
-				//origin right shift, need display
+				//origin right shift, adjust the, need display
 				loading_flag = 0;
 				temp_for_origin_point = origin_point + 6'b1;
 				origin_point = temp_for_origin_point;
@@ -160,8 +161,10 @@ always(state_change)begin
 	3'b101:begin
 		//output 16 cycles state
 		if(output_counter != 5'b10000)begin
+			position_bias = (output_counter / 5'd4) * 5'd4 + output_counter;
+			out_position = position_bias + origin_point;
 			o_out_valid_w = 1'b1;
-			out_position = (output_counter % 5'd4) * 5'd4 + 
+			o_out_data_w = input_img[out_position];
 		end
 	end
 	default:begin
