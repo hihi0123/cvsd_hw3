@@ -51,6 +51,13 @@ reg [4:0]  next_output_counter;
 reg [6:0]  output_position;
 reg [6:0]  position_bias;
 
+//
+integer i,j,k,l;
+reg [23:0]  next_input_img [0:63];
+
+//
+
+
 // ---------------------------------------------------------------------------
 // Continuous Assignment
 // ---------------------------------------------------------------------------
@@ -109,18 +116,28 @@ always(*)begin
 			3'b011:begin
 				//default origin, shift the origin to 0, need display
 				next_origin_point = 0;
+				//go to output 16 cycles state
+				next_fsm_state = 3'b100;
 			end
 			3'b100:begin
 				//zoom-in, shift the origin to 18, need display
+				next_origin_point = 7'b0010010;
+				next_fsm_state = 3'b100;
 			end
 			3'b101:begin
 				//median filter, no display
+				
+
 			end
 			3'b110:begin
 				//YcbCr, no display
+				for(l=0;i<64;l++)begin
+					
+				end
 			end
 			3'b111:begin
-				//RGBm no display
+				//RGB mode no display
+				for()
 			end
 		end
 		1'b0:begin
@@ -172,6 +189,7 @@ always(*)begin
 end
 
 
+
 // ---------------------------------------------------------------------------
 // Sequential Block
 // ---------------------------------------------------------------------------
@@ -198,7 +216,7 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		i_in_data_w  <= 0;*/
 
 		for(i=0; i<16; i++) output_img[i] <= 0;
-		for(i=0; i<64; i++) input_img[j]  <= 0;
+		for(j=0; j<64; j++) input_img[j]  <= 0;
 
 		fsm_state       <= 0; 
 		next_fsm_state  <= 0;
@@ -214,6 +232,8 @@ always@(posedge i_clk or negedge i_rst_n)begin
 
 		output_position     <= 0;
 		position_bias       <= 0;
+
+		for(k=0; k<64; k++) next_input_img[k] <= 0;
 
 	end
 	else begin
@@ -247,5 +267,8 @@ always(@negedge i_clk)begin
 	output_counter <= next_output_counter;
 end
 
+always(@negedge i_clk)begin
+	for(k=0; k<64; k++) input_img[k] <= next_input_img[k];
+end
 
 endmodule
