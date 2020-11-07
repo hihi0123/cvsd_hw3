@@ -86,6 +86,9 @@ reg ycbcr_mode;
 reg [23:0] current_ycbcr_img [0:63];
 reg [23:0] next_current_ycbcr_img [0:63];
 
+//for median filter
+integer f_count_r,f_count_g, f_count_b;
+reg [8:0] compare_flag[0:8];
 
 // ---------------------------------------------------------------------------
 // Continuous Assignment
@@ -154,6 +157,59 @@ always@(*)begin
 			end
 			3'b101:begin
 				//median filter, no display
+				// R channel
+				for(f_count_r=0;f_count_r<64;f_count_r=f_count_r+1)begin
+					if(f_count_r==0 || f_count_r==7 || f_count_r==56 || f_count_r==63)begin
+						next_input_img[f_count_r] = 0;
+					end
+					else if(f_count_r == 1 || f_count_r == 2 || f_count_r == 3 || f_count_r == 4 || f_count_r == 5 || f_count_r==6)begin
+						//left //f_count_r-1//
+						if((input_img[f_count_r-1][7:0] >= input_img[f_count_r][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count+1][7:0])  && (input_img[f_count_r-1][7:0] < input_img[f_count+7][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count+8][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count_r+9][7:0]) )begin
+							next_input_img[f_count_r][7:0] = input_img[f_count_r-1][7:0];
+						end
+						else if((input_img[f_count_r-1][7:0] < input_img[f_count_r][7:0]) && (input_img[f_count_r-1][7:0] >= input_img[f_count+1][7:0])  && (input_img[f_count_r-1][7:0] < input_img[f_count+7][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count+8][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count_r+9][7:0]))begin
+							next_input_img[f_count_r][7:0] = input_img[f_count_r-1][7:0];
+						end
+						else if((input_img[f_count_r-1][7:0] < input_img[f_count_r][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count+1][7:0])  && (input_img[f_count_r-1][7:0] >= input_img[f_count+7][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count+8][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count_r+9][7:0]))begin
+							next_input_img[f_count_r][7:0] = input_img[f_count_r-1][7:0];
+						end
+						else if((input_img[f_count_r-1][7:0] < input_img[f_count_r][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count+1][7:0])  && (input_img[f_count_r-1][7:0] < input_img[f_count+7][7:0]) && (input_img[f_count_r-1][7:0] >= input_img[f_count+8][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count_r+9][7:0]))begin
+							next_input_img[f_count_r][7:0] = input_img[f_count_r-1][7:0];
+						end
+						else if((input_img[f_count_r-1][7:0] < input_img[f_count][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count+1][7:0])  && (input_img[f_count_r-1][7:0] < input_img[f_count+7][7:0]) && (input_img[f_count_r-1][7:0] < input_img[f_count+8][7:0]) && (input_img[f_count_r-1][7:0] >= input_img[f_count_r+9][7:0]))begin
+							next_input_img[f_count_r][7:0] = input_img[f_count_r-1][7:0];
+						end
+						else begin
+							//do no operation
+						end
+						//mid  //f_count//
+						
+
+
+						//right
+						//left down
+						//down
+						//right down 
+					end
+					else if(f_count_r == 8 || f_count_r == 16 || f_count_r == 24 || f_count_r == 32 || f_count_r == 40 || f_count_r == 48)begin
+						
+					end
+					else if(f_count_r == 15 || f_count_r == 23 || f_count_r == 31 || f_count_r == 39 || f_count_r == 47 || f_count_r == 55)begin
+						
+					end
+					else if(f_count_r == 57  || f_count_r == 58 || f_count_r == 59 || f_count_r == 60 || f_count_r == 61 || f_count_r == 62)begin
+						
+					end
+					else begin
+						
+					end
+				end
+				//G channel
+
+				//B channel
+
+
+
 				next_fsm_state = 3'b001;
 			end
 			3'b110:begin
