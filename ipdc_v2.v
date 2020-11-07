@@ -28,9 +28,11 @@ reg 	   i_in_valid_w;
 reg [23:0] i_in_data_w;  */
 
 //store input image
+integer i;
 reg [23:0]  input_img [0:63];
 
 //store output image
+integer j;
 reg [23:0] output_img [0:15];
 
 //fsm state
@@ -52,10 +54,29 @@ reg [6:0]  output_position;
 reg [6:0]  position_bias;
 
 //
-integer i,j,k,l;
+integer k,l;
 reg [23:0]  next_input_img [0:63];
 
-//
+//to calculate the ycbcr
+integer m,n,o,p,q,r; //m for cbcr mode
+reg [11:0] yr[0:63];
+reg [11:0] yg_1[0:63];
+reg [11:0] yg_2[0:63];
+reg [11:0] y_sum[0:63];
+reg  [8:0] y_sum_round[0:63];
+
+integer nn,oo,pp,qq,rr;
+reg [11:0] cb_r[0:63];
+reg [11:0] cb_g[0:63];
+reg [11:0] cb_b[0:63];
+reg [11:0] cb_sum[0:63];
+reg  [8:0] cb_sum_round[0:63];
+
+//detect the mode to output
+integer s,t;
+reg ycbcr_mode;
+reg [23:0] current_ycbcr_img [0:63];
+reg [23:0] next_current_ycbcr_img [0:63];
 
 
 // ---------------------------------------------------------------------------
@@ -131,13 +152,53 @@ always(*)begin
 			end
 			3'b110:begin
 				//YcbCr, no display
-				for(l=0;i<64;l++)begin
+				//calculate Ycbcr
+				ycbcr_mode = 1'b1;
+
+				for(m=0;m<64;m++)begin
+					//------------y = 0.25R + 0.5 G + 0.125G -------------//
+					yr[m]   = {{3{1'b0}},input_img[m][7:0],{1'b0}};
+					yg_1[m] = {{2{1'b0}},input_img[m][15:8],{2{1'b0}}};
+					yg_2[m] = {{4{1'b0}},input_img[m][15:8]};
+					y_sum[m] = yr[m] + yg_1[m] + yg_2[m];
+					//round and delete the last 3 bits
+					if(y_sum[m][2]==1'b1)begin
+						y_sum_round[m] = y_sum[m][11:3]+9'b0_0000_0001;
+					end
+					else begin
+						y_sum_round[m] = y_sum[m][11:3];
+					end
+					if(y_sum_round[m] > 9'b0_1111_1111)begin
+						next_input_img[m][7:0] = 8'b1111_1111; 
+					end
+					else begin
+						next_input_img[m][7:0] = y_sum_round[m][7:0];
+					end
+					//-----------cb = -0.125R -0.25 G +0.5 B +128-----//
+					cb_r[m]  = {{4{1'b0}},input_img[m][7:0]};
+					cb_g[m]  = {{3{1'b0}},input_img[m][15:8],{1'b0}};
+					cb_b[m]  = {{2{1'b0}},input_img[m][23:16],{2{1'b0}}};
+					cb_sum[m] = cb_b[m] - cb_r[m] - cb_g[m];
+					if(cb_sum[m][2]==1'b1)begin                           //2^7 = 128 
+						cb_sum_round = cb_sum[m][11:3] + 9'b0_0000_0001+9'b0_1000_0000;
+					end
+					else begin
+						cb_sum_round = cb_sum[m][11:3];
+					end
+					if(cb_sum_round > 9'b0_1111_1111)begin
+						next_input_img[15:8] = 8'b1111_1111;
+					end
+					else begin
+						
+					end
 					
+
 				end
+				
 			end
 			3'b111:begin
 				//RGB mode no display
-				for()
+				ycbcr_mode = 1'b0;
 			end
 		end
 		1'b0:begin
@@ -162,27 +223,32 @@ always(*)begin
 		o_out_valid_w = 1'b1;
 		next_fsm_state = 3'b001;
 	end
-	3'b100:begin
-		if(output_counter != 5'b10000)begin
-			//              (               /        4) *        4 
-			position_bias = (output_counter / 5'b00100) * 5'b00100 + output_counter;
-			output_position = position_bias + origin_point ;
-			
-			o_out_valid_w = 1'b1;
-			o_out_data_w  = input_img[output_position];
+	3'b100:begin  //output 16 cycles
+		if(ycbcr_mode == 1'b0)begin //now is rgb mode
+			if(output_counter != 5'b10000)begin
+				//              (               /        4) *        4 
+				position_bias = (output_counter / 5'b00100) * 5'b00100 + output_counter;
+				output_position = position_bias + origin_point ;
+				
+				o_out_valid_w = 1'b1;
+				o_out_data_w  = input_img[output_position];
 
-			next_output_counter = output_counter + 5'b00001;
-			next_fsm_state = fsm_state;
+				next_output_counter = output_counter + 5'b00001;
+				next_fsm_state = fsm_state;
+			end
+			else begin
+				position_bias = 0;
+				output_position = 0;
+
+				o_out_valid_w = 1'b0;
+				o_out_data_w = 0;
+
+				next_output_counter = 0;
+				next_fsm_state = 3'b001;
+			end
 		end
 		else begin
-			position_bias = 0;
-			output_position = 0;
-
-			o_out_valid_w = 1'b0;
-			o_out_data_w = 0;
-
-			next_output_counter = 0;
-			next_fsm_state = 3'b001;
+			
 		end
 	end
 
@@ -232,6 +298,22 @@ always@(posedge i_clk or negedge i_rst_n)begin
 
 		output_position     <= 0;
 		position_bias       <= 0;
+
+		for(n=0; n<64;n++) yr[n] <= 0; 
+		for(o=0; o<64;o++) yg_1[o] <= 0; 
+		for(p=0; p<64;p++) yg_2[p] <= 0;
+		for(q=0; q<64;q++) y_sum[q] <= 0;
+		for(r=0; r<64;r++) y_sum_round[r] <= 0;
+
+		for(nn=0; nn<64;nn++) cb_r[nn] <= 0;
+		for(oo=0; oo<64;oo++) cb_g[oo] <= 0;
+		for(pp=0; pp<64;pp++) cb_b[pp] <= 0;
+		for(qq=0; qq<64;qq++) cb_sum[qq] <= 0;
+		for(rr=0; rr<64;rr++) cb_sum_round[rr] <= 0;
+		
+		ycbcr_mode <= 0;
+		for(s=0; s<64; s++) current_ycbcr_img[s] <= 0;
+		for(t=0; t<64; t++) next_current_ycbcr_img[t] <= 0;
 
 		for(k=0; k<64; k++) next_input_img[k] <= 0;
 
