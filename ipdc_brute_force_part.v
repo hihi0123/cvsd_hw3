@@ -88,20 +88,14 @@ reg [23:0] next_current_ycbcr_img [0:63];
 
 //for median filter
 integer f_r,f_g, f_b;
-integer cf1,cf2,cf3,cf4,cf5;
-reg     compare_flag1_r[0:63];
-reg     compare_flag2_r[0:63];
-reg     compare_flag3_r[0:63];
-reg     compare_flag4_r[0:63];
-reg     compare_flag5_r[0:63];
-reg     compare_flag6_r[0:63];
+reg [8:0] compare_flag[0:8];
+
+
 //sram reg
 reg        sram_wen; //write enable
 reg [7:0]  sram_a;   //address
 reg [7:0]  sram_d;   //data inputs
 reg [7:0]  sram_q;   //data outputs
-
-
 
 
 // ---------------------------------------------------------------------------
@@ -176,111 +170,104 @@ always@(*)begin
 				for(f_r=0;f_r<64;f_r=f_r+1)begin
 					if(f_r==0 || f_r==7 || f_r==56 || f_r==63)begin
 						next_input_img[f_r] = 0;
-					end  
-					//------------------------------------------------------------------------------------------------//
+					end
 					//-------------------------------------------------up row-----------------------------------------//
 					else if(f_r == 1 || f_r == 2 || f_r == 3 || f_r == 4 || f_r == 5 || f_r==6)begin
-						compare_flag1_r[f_r] = choose_median(input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag2_r[f_r] = choose_median(input_img[f_r][7:0],input_img[f_r-1][7:0],input_img[f_r+1][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag3_r[f_r] = choose_median(input_img[f_r+1][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag4_r[f_r] = choose_median(input_img[f_r+7][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag5_r[f_r] = choose_median(input_img[f_r+8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+7][7:0],input_img[f_r+9][7:0]);
-						compare_flag6_r[f_r] = choose_median(input_img[f_r+9][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						
-						if(compare_flag1_r[f_r] == 1'b1)begin
+						//left----------------------- //f_r-1//----------------
+						if((input_img[f_r-1][7:0] >= input_img[f_r][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r-1][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+8][7:0])  && (input_img[f_r-1][7:0] < input_img[f_r+9][7:0]) )begin
 							next_input_img[f_r][7:0] = input_img[f_r-1][7:0];
 						end
-						else if(compare_flag2_r[f_r] == 1'b1)begin
+						else if((input_img[f_r-1][7:0] < input_img[f_r][7:0]) && (input_img[f_r-1][7:0] >= input_img[f_r+1][7:0])  && (input_img[f_r-1][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r-1][7:0];
+						end
+						else if((input_img[f_r-1][7:0] < input_img[f_r][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r-1][7:0] >= input_img[f_r+7][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r-1][7:0];
+						end
+						else if((input_img[f_r-1][7:0] < input_img[f_r][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r-1][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r-1][7:0] >= input_img[f_r+8][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r-1][7:0];
+						end
+						else if((input_img[f_r-1][7:0] < input_img[f_r][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r-1][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r-1][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r-1][7:0] >= input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r-1][7:0];
+						end
+						else begin
+							//do no operation
+						end
+						//mid----------------------- //f_r//------------------
+						if((input_img[f_r][7:0] >= input_img[f_r-1][7:0]) && (input_img[f_r][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r][7:0] < input_img[f_r+8][7:0])  && (input_img[f_r][7:0] < input_img[f_r+9][7:0]) )begin
 							next_input_img[f_r][7:0] = input_img[f_r][7:0];
 						end
-						else if(compare_flag3_r[f_r] == 1'b1)begin
+						else if((input_img[f_r][7:0] < input_img[f_r-1][7:0]) && (input_img[f_r][7:0] >= input_img[f_r+1][7:0])  && (input_img[f_r][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r][7:0];
+						end
+						else if((input_img[f_r][7:0] < input_img[f_r-1][7:0]) && (input_img[f_r][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r][7:0] >= input_img[f_r+7][7:0]) && (input_img[f_r][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r][7:0];
+						end
+						else if((input_img[f_r][7:0] < input_img[f_r-1][7:0]) && (input_img[f_r][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r][7:0] >= input_img[f_r+8][7:0]) && (input_img[f_r][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r][7:0];
+						end
+						else if((input_img[f_r][7:0] < input_img[f_r-1][7:0]) && (input_img[f_r][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r][7:0] >= input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r][7:0];
+						end
+						else begin
+							//do no operation
+						end
+						//right---------------------------f_r+1---------------------
+						if((input_img[f_r+1][7:0] >= input_img[f_r][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r-1][7:0])  && (input_img[f_r+1][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r+8][7:0])  && (input_img[f_r+1][7:0] < input_img[f_r+9][7:0]) )begin
 							next_input_img[f_r][7:0] = input_img[f_r+1][7:0];
 						end
-						else if(compare_flag4_r[f_r] == 1'b1)begin
+						else if((input_img[f_r+1][7:0] < input_img[f_r][7:0]) && (input_img[f_r+1][7:0] >= input_img[f_r-1][7:0])  && (input_img[f_r+1][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r+1][7:0];
+						end
+						else if((input_img[f_r+1][7:0] < input_img[f_r][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r-1][7:0])  && (input_img[f_r+1][7:0] >= input_img[f_r+7][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r+1][7:0];
+						end
+						else if((input_img[f_r+1][7:0] < input_img[f_r][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r-1][7:0])  && (input_img[f_r+1][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r+1][7:0] >= input_img[f_r+8][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r+1][7:0];
+						end
+						else if((input_img[f_r+1][7:0] < input_img[f_r][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r-1][7:0])  && (input_img[f_r+1][7:0] < input_img[f_r+7][7:0]) && (input_img[f_r+1][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r+1][7:0] >= input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r+1][7:0];
+						end
+						else begin
+							//do no operation
+						end
+
+						//left down------------------------f_r+7---------------------------
+						if((input_img[f_r+7][7:0] >= input_img[f_r][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r+7][7:0] < input_img[f_r-1][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+8][7:0])  && (input_img[f_r+7][7:0] < input_img[f_r+9][7:0]) )begin
 							next_input_img[f_r][7:0] = input_img[f_r+7][7:0];
 						end
-						else if(compare_flag5_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+8][7:0];
+						else if((input_img[f_r+7][7:0] < input_img[f_r][7:0]) && (input_img[f_r+7][7:0] >= input_img[f_r+1][7:0])  && (input_img[f_r+7][7:0] < input_img[f_r-1][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r+7][7:0];
 						end
-						else if(compare_flag6_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+9][7:0];
+						else if((input_img[f_r+7][7:0] < input_img[f_r][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r+7][7:0] >= input_img[f_r-1][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r+7][7:0];
+						end
+						else if((input_img[f_r+7][7:0] < input_img[f_r][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r+7][7:0] < input_img[f_r-1][7:0]) && (input_img[f_r+7][7:0] >= input_img[f_r+8][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r+7][7:0];
+						end
+						else if((input_img[f_r+7][7:0] < input_img[f_r][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+1][7:0])  && (input_img[f_r+7][7:0] < input_img[f_r-1][7:0]) && (input_img[f_r+7][7:0] < input_img[f_r+8][7:0]) && (input_img[f_r+7][7:0] >= input_img[f_r+9][7:0]))begin
+							next_input_img[f_r][7:0] = input_img[f_r+7][7:0];
 						end
 						else begin
 							//do no operation
 						end
+						//down
+
+						//right down 
 					end
 					//--------------------------------------------------------------------------------------------//					
-					//------------------------------------------left column---------------------------------------//
+					//-------------------------------------------------left---------------------------------------//
 					else if(f_r == 8 || f_r == 16 || f_r == 24 || f_r == 32 || f_r == 40 || f_r == 48)begin
-						compare_flag1_r[f_r] = choose_median(input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag2_r[f_r] = choose_median(input_img[f_r-7][7:0],input_img[f_r-8][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag3_r[f_r] = choose_median(input_img[f_r][7:0],input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag4_r[f_r] = choose_median(input_img[f_r+1][7:0],input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag5_r[f_r] = choose_median(input_img[f_r+8][7:0],input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+9][7:0]);
-						compare_flag6_r[f_r] = choose_median(input_img[f_r+9][7:0],input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0]);
-
-						if(compare_flag1_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-8][7:0];
-						end
-						else if(compare_flag2_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-7][7:0];
-						end
-						else if(compare_flag3_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r][7:0];
-						end
-						else if(compare_flag4_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+1][7:0];
-						end
-						else if(compare_flag5_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+8][7:0];
-						end
-						else if(compare_flag6_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+9][7:0];
-						end
-						else begin
-							//do no operation
-						end
-
+						
 					end
 					//--------------------------------------------------------------------------------------------//
 					//------------------------------------------------right---------------------------------------//
 					else if(f_r == 15 || f_r == 23 || f_r == 31 || f_r == 39 || f_r == 47 || f_r == 55)begin
-						compare_flag1_r[f_r] = choose_median(input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						compare_flag2_r[f_r] = choose_median(input_img[f_r-8][7:0],input_img[f_r-9][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						compare_flag3_r[f_r] = choose_median(input_img[f_r-1][7:0],input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						compare_flag4_r[f_r] = choose_median(input_img[f_r][7:0],input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						compare_flag5_r[f_r] = choose_median(input_img[f_r+7][7:0],input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+8][7:0]);
-						compare_flag6_r[f_r] = choose_median(input_img[f_r+8][7:0],input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0]);
-
-						if(compare_flag1_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-9][7:0];
-						end
-						else if(compare_flag2_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-8][7:0];
-						end
-						else if(compare_flag3_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-1][7:0];
-						end
-						else if(compare_flag4_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r][7:0];
-						end
-						else if(compare_flag5_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+7][7:0];
-						end
-						else if(compare_flag6_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+8][7:0];
-						end
-						else begin
-							//do no operation
-						end
-
+						
 					end
 					//--------------------------------------------------------------------------------------------//
 					//------------------------------------------------down----------------------------------------//
 					else if(f_r == 57  || f_r == 58 || f_r == 59 || f_r == 60 || f_r == 61 || f_r == 62)begin
-						compare_flag1_r[f_r] = choose_median(input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-
-
+						
 					end
 					//--------------------------------------------------------------------------------------------//
 					//------------------------------------------------mid-----------------------------------------//
@@ -464,26 +451,23 @@ end
 // function block
 //----------------------------------------------------------------------------
 function choose_median;
-input [7:0] a,b,c,d,e,f;
-if(a>=b && a<b && a<c && a<d && a<e && a<f)begin
+input [7:0] a,b,c,d,e;
+if(a>=b && a<b && a<c && a<d && a<e)begin
 	choose_median = 1'b1;
 end
-else if (a<b && a>=b && a<c && a<d && a<e && a<f) begin
+else if (a<b && a>=b && a<c && a<d && a<e) begin
 	choose_median = 1'b1;
 end
-else if(a<b && a>=b && a<c && a<d && a<e && a<f)begin
+else if(a<b && a>=b && a<c && a<d && a<e)begin
 	choose_median = 1'b1;
 end
-else if(a<b && a<b && a>=c && a<d && a<e && a<f)begin
+else if(a<b && a<b && a>=c && a<d && a<e)begin
 	choose_median = 1'b1;
 end
-else if(a<b && a<b && a<c && a>=d && a<e && a<f)begin
+else if(a<b && a<b && a<c && a>=d && a<e)begin
 	choose_median = 1'b1;
 end
-else if(a<b && a<b && a<c && a<d && a>=e && a<f)begin
-	choose_median = 1'b1;
-end
-else if(a<b && a<b && a<c && a<d && a<e && a>=f)begin
+else if(a<b && a<b && a<c && a<d && a>=e)begin
 	choose_median = 1'b1;
 end
 else begin
@@ -560,15 +544,6 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		for(t=0; t<64; t=t+1) next_current_ycbcr_img[t] <= 0;
 
 		for(k=0; k<64; k=k+1) next_input_img[k] <= 0;
-
-
-		//for conpare_flag
-		for(cf1=0; cf1<64; cf1=cf1+1) compare_flag1_r[cf1] <= 0;
-		for(cf2=0; cf2<64; cf2=cf2+1) compare_flag2_r[cf2] <= 0;
-		for(cf3=0; cf3<64; cf3=cf3+1) compare_flag3_r[cf3] <= 0;
-		for(cf4=0; cf4<64; cf4=cf4+1) compare_flag4_r[cf4] <= 0;
-		for(cf5=0; cf5<64; cf5=cf5+1) compare_flag5_r[cf5] <= 0;
-		for(cf6=0; cf6<64; cf6=cf6+1) compare_flag6_r[cf6] <= 0;
 
 		//---memory-----
 		sram_wen = 0;
