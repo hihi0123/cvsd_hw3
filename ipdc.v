@@ -566,11 +566,13 @@ always@(*)begin
 			3'b110:begin
 				//YcbCr, no display
 				ycbcr_mode = 1'b1;	
+				o_out_valid_w = 1'b1;
 				next_fsm_state = 3'b001;		
 			end
 			3'b111:begin
 				//RGB mode no display
 				ycbcr_mode = 1'b0;
+				o_out_valid_w = 1'b1;
 				next_fsm_state = 3'b001;
 			end
 			endcase
@@ -584,22 +586,20 @@ always@(*)begin
 	3'b010:begin
 		//load state
 		if(i_in_valid == 1'b1)begin
-			input_img[register_no] = i_in_data;
+			next_input_img[register_no] = i_in_data;
 			next_register_no = register_no + 7'b0000001;			
 			next_fsm_state = 3'b010;
+			//$display("reg num. %d = %b",register_no,next_input_img[register_no]);
 
 			//------------memory operate------------
 			sram_wen_w = 1'b1;
 			sram_a_w = {{1'b0},register_no};
 			sram_d_w = i_in_data;
-
-
 			//--------------------------------------
 		end
 		else begin
 			next_register_no = 0;
-			next_fsm_state = 3'b011;
-			
+			next_fsm_state = 3'b011;			
 			//------------memory operate------------
 			sram_wen_w = 1'b0;
 			sram_a_w = 0;
@@ -788,8 +788,8 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		for(i=0; i<16; i=i+1) output_img[i] <= 0;
 		for(j=0; j<64; j=j+1) input_img[j]  <= 0;
 
-		fsm_state       <= 0; 
-		next_fsm_state  <= 0;
+		fsm_state       <= 3'b001; 
+		next_fsm_state  <= 3'b001;
 
 		register_no      <= 0;
 		next_register_no <= 0;
@@ -875,7 +875,7 @@ always@(negedge i_clk)begin
 end
 
 always@(negedge i_clk)begin
-	for(kk=0; kk<64; kk=kk+1) input_img[k] <= next_input_img[k];
+	for(kk=0; kk<64; kk=kk+1) input_img[kk] <= next_input_img[kk];
 end
 
 
