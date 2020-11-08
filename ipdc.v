@@ -90,6 +90,14 @@ reg [23:0] next_current_ycbcr_img [0:63];
 integer f_count_r,f_count_g, f_count_b;
 reg [8:0] compare_flag[0:8];
 
+
+//sram reg
+reg        sram_wen; //write enable
+reg [7:0]  sram_a;   //address
+reg [7:0]  sram_d;   //data inputs
+reg [7:0]  sram_q;   //data outputs
+
+
 // ---------------------------------------------------------------------------
 // Continuous Assignment
 // ---------------------------------------------------------------------------
@@ -97,6 +105,7 @@ reg [8:0] compare_flag[0:8];
 assign o_in_ready = o_in_ready_r;
 assign o_out_valid = o_out_valid_r;
 assign o_out_data = o_out_data_r;
+
 
 
 // ---------------------------------------------------------------------------
@@ -236,10 +245,24 @@ always@(*)begin
 			input_img[register_no] = i_in_data;
 			next_register_no = register_no + 7'b0000001;			
 			next_fsm_state = 3'b010;
+
+			//------------memory operate------------
+			sram_wen = 1'b1;
+			sram_a = {{1'b0},register_no};
+			sram_d = i_in_data;
+
+
+			//--------------------------------------
 		end
 		else begin
 			next_register_no = 0;
 			next_fsm_state = 3'b011;
+			
+			//------------memory operate------------
+			sram_wen = 1'b0;
+			sram_a = 0;
+			sram_d = 0;
+			//--------------------------------------
 		end
 	end
 	3'b011:begin
@@ -432,6 +455,11 @@ always@(posedge i_clk or negedge i_rst_n)begin
 
 		for(k=0; k<64; k=k+1) next_input_img[k] <= 0;
 
+		//---memory-----
+		sram_wen = 0;
+		sram_a = 0;
+		sram_d = 0;
+		//--------------
 	end
 	else begin
 		o_in_ready_r <= o_in_ready_w;
@@ -467,5 +495,17 @@ end
 always@(negedge i_clk)begin
 	for(kk=0; kk<64; kk=kk+1) input_img[k] <= next_input_img[k];
 end
+
+
+
+sram_256x8 u_R_sram (
+        .CLK(i_clk),
+        .CEN(1'b0),
+        .WEN(sram_wen),
+        .A(sram_a),
+        .D(sram_d),   //D[7:0]
+        .Q(sram_q)
+    );
+
 
 endmodule
