@@ -89,29 +89,166 @@ reg [23:0] next_current_ycbcr_img [0:63];
 //for median filter
 integer f_r,f_g, f_b;
 integer cf1,cf2,cf3,cf4,cf5;
-reg     compare_flag1_r[0:63];
+/*reg     compare_flag1_r[0:63];
 reg     compare_flag2_r[0:63];
 reg     compare_flag3_r[0:63];
 reg     compare_flag4_r[0:63];
 reg     compare_flag5_r[0:63];
-reg     compare_flag6_r[0:63];
+reg     compare_flag6_r[0:63];*/
 //sram reg
-reg        sram_wen; //write enable
-reg [7:0]  sram_a;   //address
-reg [7:0]  sram_d;   //data inputs
-reg [7:0]  sram_q;   //data outputs
+wire        sram_wen; //write enable
+wire [7:0]  sram_a;   //address
+wire [7:0]  sram_d;   //data inputs
+wire [7:0]  sram_q;   //data outputs
+
+reg [7:0] sram_wen_w;
+reg [7:0] sram_d_w;
+reg [7:0] sram_a_w;
+
+//R channel declaration
+wire [7:0] m11_r, m21_r, m31_r;
+wire [7:0] m12_r, m22_r, m32_r;
+wire [7:0] m13_r, m23_r, m33_r;
+wire [7:0] answer_r;
+
+reg [7:0] m11_r_w, m21_r_w, m31_r_w;
+reg [7:0] m12_r_w, m22_r_w, m32_r_w;
+reg [7:0] m13_r_w, m23_r_w, m33_r_w;
+
+//G channel declaration
+wire [7:0] m11_g, m21_g, m31_g;
+wire [7:0] m12_g, m22_g, m32_g;
+wire [7:0] m13_g, m23_g, m33_g;
+wire [7:0] answer_g;
+
+reg [7:0] m11_g_w, m21_g_w, m31_g_w;
+reg [7:0] m12_g_w, m22_g_w, m32_g_w;
+reg [7:0] m13_g_w, m23_g_w, m33_g_w;
+
+//B channel declaration
+wire [7:0] m11_b, m21_b, m31_b;
+wire [7:0] m12_b, m22_b, m32_b;
+wire [7:0] m13_b, m23_b, m33_b;
+wire [7:0] answer_b;
+
+reg [7:0] m11_b_w, m21_b_w, m31_b_w;
+reg [7:0] m12_b_w, m22_b_w, m32_b_w;
+reg [7:0] m13_b_w, m23_b_w, m33_b_w;
 
 
+//R channel assing
+assign m11_r = m11_r_w;
+assign m21_r = m21_r_w;
+assign m31_r = m31_r_w;
+
+assign m12_r = m12_r_w;
+assign m22_r = m22_r_w;
+assign m32_r = m32_r_w;
+
+assign m13_r = m13_r_w;
+assign m23_r = m23_r_w;
+assign m33_r = m33_r_w;
+
+//G channel assign
+assign m11_g = m11_g_w;
+assign m21_g = m21_g_w;
+assign m31_g = m31_g_w;
+
+assign m12_g = m12_g_w;
+assign m22_g = m22_g_w;
+assign m32_g = m32_g_w;
+
+assign m13_g = m13_g_w;
+assign m23_g = m23_g_w;
+assign m33_g = m33_g_w;
+
+//B channel assign
+assign m11_b = m11_b_w;
+assign m21_b = m21_b_w;
+assign m31_b = m31_b_w;
+
+assign m12_b = m12_b_w;
+assign m22_b = m22_b_w;
+assign m32_b = m32_b_w;
+
+assign m13_b = m13_b_w;
+assign m23_b = m23_b_w;
+assign m33_b = m33_b_w;
 
 
+//memory assign
+assign sram_wen = sram_wen_w;
+assign sram_d = sram_d_w;
+assign sram_a = sram_a_w;
 // ---------------------------------------------------------------------------
 // Continuous Assignment
 // ---------------------------------------------------------------------------
 // ---- Add your own wire data assignments here if needed ---- //
+// assign wire = reg/wire
 assign o_in_ready = o_in_ready_r;
 assign o_out_valid = o_out_valid_r;
 assign o_out_data = o_out_data_r;
 
+
+
+
+choose_median channel_r(
+							.i_position_1_1(m11_r),
+							.i_position_2_1(m21_r),
+							.i_position_3_1(m31_r),
+
+							.i_position_1_2(m12_r),
+							.i_position_2_2(m22_r),
+							.i_position_3_2(m32_r),
+
+							.i_position_1_3(m13_r),
+							.i_position_2_3(m23_r),
+							.i_position_3_3(m33_r),
+
+							.median(answer_r)
+						);
+
+choose_median channel_g(
+							.i_position_1_1(m11_g),
+							.i_position_2_1(m21_g),
+							.i_position_3_1(m31_g),
+
+							.i_position_1_2(m12_g),
+							.i_position_2_2(m22_g),
+							.i_position_3_2(m32_g),
+
+							.i_position_1_3(m13_g),
+							.i_position_2_3(m23_g),
+							.i_position_3_3(m33_g),
+
+							.median(answer_g)
+						);
+
+choose_median channel_b(
+							.i_position_1_1(m11_b),
+							.i_position_2_1(m21_b),
+							.i_position_3_1(m31_b),
+
+							.i_position_1_2(m12_b),
+							.i_position_2_2(m22_b),
+							.i_position_3_2(m32_b),
+
+							.i_position_1_3(m13_b),
+							.i_position_2_3(m23_b),
+							.i_position_3_3(m33_b),
+
+							.median(answer_b)
+						);
+
+
+sram_256x8 u_R_sram (
+        .CLK(i_clk),
+        .CEN(1'b0),
+        .WEN(sram_wen),
+        .A(sram_a),
+        .D(sram_d),   //D[7:0]
+        .Q(sram_q)
+    );
 
 
 // ---------------------------------------------------------------------------
@@ -172,125 +309,255 @@ always@(*)begin
 			end
 			3'b101:begin
 				//median filter, no display
-				// R channel
 				for(f_r=0;f_r<64;f_r=f_r+1)begin
 					if(f_r==0 || f_r==7 || f_r==56 || f_r==63)begin
-						next_input_img[f_r] = 0;
+						next_input_img[f_r] = 0;						
 					end  
 					//------------------------------------------------------------------------------------------------//
 					//-------------------------------------------------up row-----------------------------------------//
 					else if(f_r == 1 || f_r == 2 || f_r == 3 || f_r == 4 || f_r == 5 || f_r==6)begin
-						compare_flag1_r[f_r] = choose_median(input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag2_r[f_r] = choose_median(input_img[f_r][7:0],input_img[f_r-1][7:0],input_img[f_r+1][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag3_r[f_r] = choose_median(input_img[f_r+1][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag4_r[f_r] = choose_median(input_img[f_r+7][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag5_r[f_r] = choose_median(input_img[f_r+8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+7][7:0],input_img[f_r+9][7:0]);
-						compare_flag6_r[f_r] = choose_median(input_img[f_r+9][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						
-						if(compare_flag1_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-1][7:0];
-						end
-						else if(compare_flag2_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r][7:0];
-						end
-						else if(compare_flag3_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+1][7:0];
-						end
-						else if(compare_flag4_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+7][7:0];
-						end
-						else if(compare_flag5_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+8][7:0];
-						end
-						else if(compare_flag6_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+9][7:0];
-						end
-						else begin
-							//do no operation
-						end
+						//R channel
+						m11_r_w = 8'b0000_0000;
+						m21_r_w = input_img[f_r-1][7:0];
+						m31_r_w = input_img[f_r+7][7:0];
+
+						m12_r_w = 8'b0000_0000;
+						m22_r_w = input_img[f_r][7:0];
+						m32_r_w = input_img[f_r+8][7:0];
+
+						m13_r_w = 8'b0000_0000;
+						m23_r_w = input_img[f_r+1][7:0];
+						m33_r_w = input_img[f_r+9][7:0];
+
+						next_input_img[f_r][7:0] = answer_r;
+
+						//G channel
+						m11_g_w = 8'b0000_0000;
+						m21_g_w = input_img[f_r-1][15:8];
+						m31_g_w = input_img[f_r+7][15:8];
+
+						m12_g_w = 8'b0000_0000;
+						m22_g_w = input_img[f_r][15:8];
+						m32_g_w = input_img[f_r+8][15:8];
+
+						m13_g_w = 8'b0000_0000;
+						m23_g_w = input_img[f_r+1][15:8];
+						m33_g_w = input_img[f_r+9][15:8];
+
+						next_input_img[f_r][15:8] = answer_g;
+
+						//B channel
+						m11_b_w = 8'b0000_0000;
+						m21_b_w = input_img[f_r-1][23:16];
+						m31_b_w = input_img[f_r+7][23:16];
+
+						m12_b_w = 8'b0000_0000;
+						m22_b_w = input_img[f_r][23:16];
+						m32_b_w = input_img[f_r+8][23:16];
+
+						m13_b_w = 8'b0000_0000;
+						m23_b_w = input_img[f_r+1][23:16];
+						m33_b_w = input_img[f_r+9][23:16];
+
+						next_input_img[f_r][23:16] = answer_b;
+
 					end
 					//--------------------------------------------------------------------------------------------//					
 					//------------------------------------------left column---------------------------------------//
 					else if(f_r == 8 || f_r == 16 || f_r == 24 || f_r == 32 || f_r == 40 || f_r == 48)begin
-						compare_flag1_r[f_r] = choose_median(input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag2_r[f_r] = choose_median(input_img[f_r-7][7:0],input_img[f_r-8][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag3_r[f_r] = choose_median(input_img[f_r][7:0],input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag4_r[f_r] = choose_median(input_img[f_r+1][7:0],input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r][7:0],input_img[f_r+8][7:0],input_img[f_r+9][7:0]);
-						compare_flag5_r[f_r] = choose_median(input_img[f_r+8][7:0],input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+9][7:0]);
-						compare_flag6_r[f_r] = choose_median(input_img[f_r+9][7:0],input_img[f_r-8][7:0],input_img[f_r-7][7:0],input_img[f_r][7:0],input_img[f_r+1][7:0],input_img[f_r+8][7:0]);
+						//R channel
+						m11_r_w = 8'b0000_0000;
+						m21_r_w = 8'b0000_0000;
+						m31_r_w = 8'b0000_0000;
 
-						if(compare_flag1_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-8][7:0];
-						end
-						else if(compare_flag2_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-7][7:0];
-						end
-						else if(compare_flag3_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r][7:0];
-						end
-						else if(compare_flag4_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+1][7:0];
-						end
-						else if(compare_flag5_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+8][7:0];
-						end
-						else if(compare_flag6_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+9][7:0];
-						end
-						else begin
-							//do no operation
-						end
+						m12_r_w = input_img[f_r-8][7:0];
+						m22_r_w = input_img[f_r][7:0];
+						m32_r_w = input_img[f_r+8][7:0];
+
+						m13_r_w = input_img[f_r-7][7:0];
+						m23_r_w = input_img[f_r+1][7:0];
+						m33_r_w = input_img[f_r+9][7:0];
+
+						next_input_img[f_r][7:0] = answer_r;
+
+						//G channel
+						m11_g_w = 8'b0000_0000;
+						m21_g_w = 8'b0000_0000;
+						m31_g_w = 8'b0000_0000;
+
+						m12_g_w = input_img[f_r-8][15:8];
+						m22_g_w = input_img[f_r][15:8];
+						m32_g_w = input_img[f_r+8][15:8];
+
+						m13_g_w = input_img[f_r-7][15:8];
+						m23_g_w = input_img[f_r+1][15:8];
+						m33_g_w = input_img[f_r+9][15:8];
+
+						next_input_img[f_r][15:8] = answer_g;
+
+						//B channel
+						m11_b_w = 8'b0000_0000;
+						m21_b_w = 8'b0000_0000;
+						m31_b_w = 8'b0000_0000;
+
+						m12_b_w = input_img[f_r-8][23:16];
+						m22_b_w = input_img[f_r][23:16];
+						m32_b_w = input_img[f_r+8][23:16];
+
+						m13_b_w = input_img[f_r-7][23:16];
+						m23_b_w = input_img[f_r+1][23:16];
+						m33_b_w = input_img[f_r+9][23:16];
+
+						next_input_img[f_r][23:16] = answer_b;
 
 					end
 					//--------------------------------------------------------------------------------------------//
 					//------------------------------------------------right---------------------------------------//
 					else if(f_r == 15 || f_r == 23 || f_r == 31 || f_r == 39 || f_r == 47 || f_r == 55)begin
-						compare_flag1_r[f_r] = choose_median(input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						compare_flag2_r[f_r] = choose_median(input_img[f_r-8][7:0],input_img[f_r-9][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						compare_flag3_r[f_r] = choose_median(input_img[f_r-1][7:0],input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						compare_flag4_r[f_r] = choose_median(input_img[f_r][7:0],input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
-						compare_flag5_r[f_r] = choose_median(input_img[f_r+7][7:0],input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+8][7:0]);
-						compare_flag6_r[f_r] = choose_median(input_img[f_r+8][7:0],input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0]);
+						//R channel
+						m11_r_w = input_img[f_r-9][7:0];
+						m21_r_w = input_img[f_r-1][7:0];
+						m31_r_w = input_img[f_r+7][7:0];
 
-						if(compare_flag1_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-9][7:0];
-						end
-						else if(compare_flag2_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-8][7:0];
-						end
-						else if(compare_flag3_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r-1][7:0];
-						end
-						else if(compare_flag4_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r][7:0];
-						end
-						else if(compare_flag5_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+7][7:0];
-						end
-						else if(compare_flag6_r[f_r] == 1'b1)begin
-							next_input_img[f_r][7:0] = input_img[f_r+8][7:0];
-						end
-						else begin
-							//do no operation
-						end
+						m12_r_w = input_img[f_r-8][7:0];
+						m22_r_w = input_img[f_r][7:0];
+						m32_r_w = input_img[f_r+8][7:0];
+
+						m13_r_w = 8'b0000_0000;
+						m23_r_w = 8'b0000_0000;
+						m33_r_w = 8'b0000_0000;
+
+						next_input_img[f_r][7:0] = answer_r;
+
+						//G channel
+						m11_g_w = input_img[f_r-9][15:8];
+						m21_g_w = input_img[f_r-1][15:8];
+						m31_g_w = input_img[f_r+7][15:8];
+
+						m12_g_w = input_img[f_r-8][15:8];
+						m22_g_w = input_img[f_r][15:8];
+						m32_g_w = input_img[f_r+8][15:8];
+
+						m13_g_w = 8'b0000_0000;
+						m23_g_w = 8'b0000_0000;
+						m33_g_w = 8'b0000_0000;
+
+						next_input_img[f_r][15:8] = answer_g;
+
+						//B channel
+						m11_b_w = input_img[f_r-9][23:16];
+						m21_b_w = input_img[f_r-1][23:16];
+						m31_b_w = input_img[f_r+7][23:16];
+
+						m12_b_w = input_img[f_r-8][23:16];
+						m22_b_w = input_img[f_r][23:16];
+						m32_b_w = input_img[f_r+8][23:16];
+
+						m13_b_w = 8'b0000_0000;
+						m23_b_w = 8'b0000_0000;
+						m33_b_w = 8'b0000_0000;
+
+						next_input_img[f_r][23:16] = answer_b;
 
 					end
 					//--------------------------------------------------------------------------------------------//
 					//------------------------------------------------down----------------------------------------//
 					else if(f_r == 57  || f_r == 58 || f_r == 59 || f_r == 60 || f_r == 61 || f_r == 62)begin
-						compare_flag1_r[f_r] = choose_median(input_img[f_r-9][7:0],input_img[f_r-8][7:0],input_img[f_r-1][7:0],input_img[f_r][7:0],input_img[f_r+7][7:0],input_img[f_r+8][7:0]);
+						//R channel
+						m11_r_w = input_img[f_r-9][7:0];
+						m21_r_w = input_img[f_r-1][7:0];
+						m31_r_w = 8'b0000_0000;
 
+						m12_r_w = input_img[f_r-8][7:0];
+						m22_r_w = input_img[f_r][7:0];
+						m32_r_w = 8'b0000_0000;
 
+						m13_r_w = input_img[f_r-7][7:0];
+						m23_r_w = input_img[f_r+1][7:0];
+						m33_r_w = 8'b0000_0000;
+
+						next_input_img[f_r][7:0] = answer_r;
+
+						//G channel
+						m11_g_w = input_img[f_r-9][15:8];
+						m21_g_w = input_img[f_r-1][15:8];
+						m31_g_w = 8'b0000_0000;
+
+						m12_g_w = input_img[f_r-8][15:8];
+						m22_g_w = input_img[f_r][15:8];
+						m32_g_w = 8'b0000_0000;
+
+						m13_g_w = input_img[f_r-7][15:8];
+						m23_g_w = input_img[f_r+1][15:8];
+						m33_g_w = 8'b0000_0000;
+
+						next_input_img[f_r][15:8] = answer_g;
+
+						//B channel
+						m11_b_w = input_img[f_r-9][23:16];
+						m21_b_w = input_img[f_r-1][23:16];
+						m31_b_w = 8'b0000_0000;
+
+						m12_b_w = input_img[f_r-8][23:16];
+						m22_b_w = input_img[f_r][23:16];
+						m32_b_w = 8'b0000_0000;
+
+						m13_b_w = input_img[f_r-7][23:16];
+						m23_b_w = input_img[f_r+1][23:16];
+						m33_b_w = 8'b0000_0000;
+
+						next_input_img[f_r][23:16] = answer_b;
 					end
 					//--------------------------------------------------------------------------------------------//
 					//------------------------------------------------mid-----------------------------------------//
 					else begin
-						
+						//R channel
+						m11_r_w = input_img[f_r-9][7:0];
+						m21_r_w = input_img[f_r-1][7:0];
+						m31_r_w = input_img[f_r+7][7:0];
+
+						m12_r_w = input_img[f_r-8][7:0];
+						m22_r_w = input_img[f_r][7:0];
+						m32_r_w = input_img[f_r+8][7:0];
+
+						m13_r_w = input_img[f_r-7][7:0];
+						m23_r_w = input_img[f_r+1][7:0];
+						m33_r_w = input_img[f_r+9][7:0];
+
+						next_input_img[f_r][7:0] = answer_r;
+
+						//G channel
+						m11_g_w = input_img[f_r-9][15:8];
+						m21_g_w = input_img[f_r-1][15:8];
+						m31_g_w = input_img[f_r+7][15:8];
+
+						m12_g_w = input_img[f_r-8][15:8];
+						m22_g_w = input_img[f_r][15:8];
+						m32_g_w = input_img[f_r+8][15:8];
+
+						m13_g_w = input_img[f_r-7][15:8];
+						m23_g_w = input_img[f_r+1][15:8];
+						m33_g_w = input_img[f_r+9][15:8];
+
+						next_input_img[f_r][15:8] = answer_g;
+
+						//B channel
+						m11_b_w = input_img[f_r-9][23:16];
+						m21_b_w = input_img[f_r-1][23:16];
+						m31_b_w = input_img[f_r+7][23:16];
+
+						m12_b_w = input_img[f_r-8][23:16];
+						m22_b_w = input_img[f_r][23:16];
+						m32_b_w = input_img[f_r+8][23:16];
+
+						m13_b_w = input_img[f_r-7][23:16];
+						m23_b_w = input_img[f_r+1][23:16];
+						m33_b_w = input_img[f_r+9][23:16];
+
+						next_input_img[f_r][23:16] = answer_b;
 					end
 				end
-				//G channel
 
-				//B channel
 
 
 
@@ -322,9 +589,9 @@ always@(*)begin
 			next_fsm_state = 3'b010;
 
 			//------------memory operate------------
-			sram_wen = 1'b1;
-			sram_a = {{1'b0},register_no};
-			sram_d = i_in_data;
+			sram_wen_w = 1'b1;
+			sram_a_w = {{1'b0},register_no};
+			sram_d_w = i_in_data;
 
 
 			//--------------------------------------
@@ -334,9 +601,9 @@ always@(*)begin
 			next_fsm_state = 3'b011;
 			
 			//------------memory operate------------
-			sram_wen = 1'b0;
-			sram_a = 0;
-			sram_d = 0;
+			sram_wen_w = 1'b0;
+			sram_a_w = 0;
+			sram_d_w = 0;
 			//--------------------------------------
 		end
 	end
@@ -463,7 +730,7 @@ end
 //----------------------------------------------------------------------------
 // function block
 //----------------------------------------------------------------------------
-function choose_median;
+/*function choose_median;
 input [7:0] a,b,c,d,e,f;
 if(a>=b && a<b && a<c && a<d && a<e && a<f)begin
 	choose_median = 1'b1;
@@ -490,7 +757,7 @@ else begin
 	choose_median = 1'b0;
 end
 
-endfunction
+endfunction*/
 
 
 // ---------------------------------------------------------------------------
@@ -563,17 +830,17 @@ always@(posedge i_clk or negedge i_rst_n)begin
 
 
 		//for conpare_flag
-		for(cf1=0; cf1<64; cf1=cf1+1) compare_flag1_r[cf1] <= 0;
+		/*for(cf1=0; cf1<64; cf1=cf1+1) compare_flag1_r[cf1] <= 0;
 		for(cf2=0; cf2<64; cf2=cf2+1) compare_flag2_r[cf2] <= 0;
 		for(cf3=0; cf3<64; cf3=cf3+1) compare_flag3_r[cf3] <= 0;
 		for(cf4=0; cf4<64; cf4=cf4+1) compare_flag4_r[cf4] <= 0;
 		for(cf5=0; cf5<64; cf5=cf5+1) compare_flag5_r[cf5] <= 0;
-		for(cf6=0; cf6<64; cf6=cf6+1) compare_flag6_r[cf6] <= 0;
+		for(cf6=0; cf6<64; cf6=cf6+1) compare_flag6_r[cf6] <= 0;*/
 
 		//---memory-----
-		sram_wen = 0;
-		sram_a = 0;
-		sram_d = 0;
+		sram_wen_w = 0;
+		sram_a_w = 0;
+		sram_d_w = 0;
 		//--------------
 	end
 	else begin
@@ -613,14 +880,243 @@ end
 
 
 
-sram_256x8 u_R_sram (
-        .CLK(i_clk),
-        .CEN(1'b0),
-        .WEN(sram_wen),
-        .A(sram_a),
-        .D(sram_d),   //D[7:0]
-        .Q(sram_q)
-    );
 
+
+
+endmodule
+
+
+// modules for choose the median
+//moduele for only 3 numbers
+module sort_3_number(
+
+	input [7:0] a,
+	input [7:0] b,
+	input [7:0] c,
+
+	output [7:0] max,
+	output [7:0] mid,
+	output [7:0] min
+
+);
+
+reg [7:0] next_max,next_mid,next_min;
+assign max = next_max;
+assign mid = next_mid;
+assign min = next_min;
+
+always@(*)begin
+	if(a>=b)begin
+		if(b>=c)begin
+			next_max = a;
+			next_mid = b;
+			next_min = c;
+		end
+		else begin    //c>b
+			if(a>=c)begin 
+				next_max = a;
+				next_mid = c;
+				next_min = b;
+			end
+			else begin   //c>a
+				next_max = c;
+				next_mid = a;
+				next_min = b;
+			end
+		end		
+	end
+	else begin //b>a
+		if(a>=c)begin
+			next_max = b;
+			next_mid = a;
+			next_min = c;
+		end
+		else begin //c>a
+			if(b>=c)begin
+				next_max = b;
+				next_mid = c;
+				next_min = a;
+			end
+			else begin //c>b
+				next_max = c;
+				next_mid = b;
+				next_min = a;
+			end
+		end
+	end	
+
+
+
+
+end
+
+endmodule
+
+
+//module for sort row
+module sort_row(
+	input [7:0] i_position_1_1,
+	input [7:0] i_position_2_1,
+	input [7:0] i_position_3_1,
+
+	input [7:0] i_position_1_2,
+	input [7:0] i_position_2_2,
+	input [7:0] i_position_3_2,
+
+	input [7:0] i_position_1_3,
+	input [7:0] i_position_2_3,
+	input [7:0] i_position_3_3,
+
+	output [7:0] o_position_1_1,
+	output [7:0] o_position_2_1,
+	output [7:0] o_position_3_1,
+
+	output [7:0] o_position_1_2,
+	output [7:0] o_position_2_2,
+	output [7:0] o_position_3_2,
+
+	output [7:0] o_position_1_3,
+	output [7:0] o_position_2_3,
+	output [7:0] o_position_3_3
+);
+
+wire [7:0] max_1,mid_1,min_1;
+wire [7:0] max_2,mid_2,min_2;
+wire [7:0] max_3,mid_3,min_3;
+
+sort_3_number s_1(
+	.a(i_position_1_1),
+	.b(i_position_2_1),
+	.c(i_position_3_1),
+
+	.max(max_1),
+	.mid(mid_1),
+	.min(min_1)	
+);
+sort_3_number s_2(
+	.a(i_position_1_2),
+	.b(i_position_2_2),
+	.c(i_position_3_2),
+
+	.max(max_2),
+	.mid(mid_2),
+	.min(min_2)	
+);
+sort_3_number s_3(
+	.a(i_position_1_3),
+	.b(i_position_2_3),
+	.c(i_position_3_3),
+
+	.max(max_3),
+	.mid(mid_3),
+	.min(min_3)	
+);
+
+
+assign o_position_1_1 = max_1;
+assign o_position_2_1 = mid_1;
+assign o_position_3_1 = min_1;
+
+assign o_position_1_2 = max_2;
+assign o_position_2_2 = mid_2;
+assign o_position_3_2 = min_2;
+
+assign o_position_1_3 = max_3;
+assign o_position_2_3 = mid_3;
+assign o_position_3_3 = min_3;
+
+endmodule
+
+// last module for choose the median
+module choose_median(
+	input [7:0] i_position_1_1,
+	input [7:0] i_position_2_1,
+	input [7:0] i_position_3_1,
+
+	input [7:0] i_position_1_2,
+	input [7:0] i_position_2_2,
+	input [7:0] i_position_3_2,
+
+	input [7:0] i_position_1_3,
+	input [7:0] i_position_2_3,
+	input [7:0] i_position_3_3,
+
+	output [7:0] median
+);
+
+wire [7:0]  temp_1_1,temp_2_1,temp_3_1;
+wire [7:0]  temp_1_2,temp_2_2,temp_3_2;
+wire [7:0]  temp_1_3,temp_2_3,temp_3_3;
+
+wire [7:0]  temp_max_1,temp_mid_1,temp_min_1;
+wire [7:0]  temp_max_2,temp_mid_2,temp_min_2;
+wire [7:0]  temp_max_3,temp_mid_3,temp_min_3;
+
+wire [7:0]  last_max,last_mid,last_min;
+
+
+sort_row sort_row_1(
+	.i_position_1_1(i_position_1_1),
+	.i_position_2_1(i_position_2_1),
+	.i_position_3_1(i_position_3_1),
+
+	.i_position_1_2(i_position_1_2),
+	.i_position_2_2(i_position_2_2),
+	.i_position_3_2(i_position_3_2),
+
+	.i_position_1_3(i_position_1_3),
+	.i_position_2_3(i_position_2_3),
+	.i_position_3_3(i_position_3_3),
+
+	.o_position_1_1(temp_1_1),
+	.o_position_2_1(temp_2_1),
+	.o_position_3_1(temp_3_1),
+
+	.o_position_1_2(temp_1_2),
+	.o_position_2_2(temp_2_2),
+	.o_position_3_2(temp_3_2),
+
+	.o_position_1_3(temp_1_3),
+	.o_position_2_3(temp_2_3),
+	.o_position_3_3(temp_3_3)
+);
+
+sort_row sort_row_2(
+	.i_position_1_1(temp_1_1),
+	.i_position_2_1(temp_1_2),
+	.i_position_3_1(temp_1_3),
+
+	.i_position_1_2(temp_2_1),
+	.i_position_2_2(temp_2_2),
+	.i_position_3_2(temp_2_3),
+
+	.i_position_1_3(temp_3_1),
+	.i_position_2_3(temp_3_2),
+	.i_position_3_3(temp_3_3),	
+
+	.o_position_1_1(temp_max_1),
+	.o_position_2_1(temp_max_2),
+	.o_position_3_1(temp_max_3),
+
+	.o_position_1_2(temp_mid_1),
+	.o_position_2_2(temp_mid_2),
+	.o_position_3_2(temp_mid_3),
+
+	.o_position_1_3(temp_min_1),
+	.o_position_2_3(temp_min_2),
+	.o_position_3_3(temp_min_3)
+);
+
+sort_3_number last_sort(
+	.a(temp_max_3),
+	.b(temp_mid_2),
+	.c(temp_min_1),
+
+	.max(last_max),
+	.mid(last_mid),
+	.min(last_min)
+);
+
+assign median = last_mid;
 
 endmodule

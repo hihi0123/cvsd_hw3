@@ -65,7 +65,7 @@ endmodule
 /*##########################################################*/
 
 module sort33 (
-	input   [ 7 : 0 ]   x11,
+	  input   [ 7 : 0 ]   x11,
     input   [ 7 : 0 ]   x21,
     input   [ 7 : 0 ]   x31,
 
@@ -77,7 +77,7 @@ module sort33 (
     input   [ 7 : 0 ]   x23,
     input   [ 7 : 0 ]   x33,
 
-	output	[ 7:0]	    o11,
+	  output	[ 7:0]	    o11,
     output	[ 7:0]	    o21,
     output	[ 7:0]	    o31,
 
@@ -95,29 +95,29 @@ wire        [7:0]       maxb, midb, minb;
 wire        [7:0]       maxc, midc, minc;
 
 sort3 s3a(
-	.A(x11),
+	  .A(x11),
     .B(x21),
     .C(x31),
 
-	.max(maxa),
+	  .max(maxa),
     .mid(mida),
     .min(mina)
 );
 sort3 s3(
-	.A(x12),
+	  .A(x12),
     .B(x22),
     .C(x32),
 
-	.max(maxb),
+	  .max(maxb),
     .mid(midb),
     .min(minb)
 );
 sort3 s3c(
-	.A(x13),
+	  .A(x13),
     .B(x23),
     .C(x33),
 
-	.max(maxc),
+	  .max(maxc),
     .mid(midc),
     .min(minc)
 );
@@ -142,7 +142,7 @@ endmodule
 /*##########################################################*/
 
 module mid9 (
-	input   [ 7 : 0 ]   x11,
+	  input   [ 7 : 0 ]   x11,
     input   [ 7 : 0 ]   x21,
     input   [ 7 : 0 ]   x31,
 
@@ -154,7 +154,7 @@ module mid9 (
     input   [ 7 : 0 ]   x23,
     input   [ 7 : 0 ]   x33,
 
-	output	[ 7:0]	    ans
+  	output	[ 7:0]	    ans
 );
 wire        [7:0]       t11,t21, t31;
 wire        [7:0]       t12,t22, t32;
@@ -167,7 +167,7 @@ wire        [7:0]       min1,min2, min3;
 wire        [7:0]       max, mid, min;
 
 sort33 sort33_1(
-	.x11(x11),
+	  .x11(x11),
     .x21(x21),
     .x31(x31),
 
@@ -179,7 +179,7 @@ sort33 sort33_1(
     .x23(x23),
     .x33(x33),
 
-	.o11(t11),
+  	.o11(t11),
     .o21(t21),
     .o31(t31),
 
@@ -193,7 +193,7 @@ sort33 sort33_1(
 );
 
 sort33 sort33_2(
-	.x11(t11),
+	  .x11(t11),
     .x21(t12),
     .x31(t13),
 
@@ -205,7 +205,7 @@ sort33 sort33_2(
     .x23(t32),
     .x33(t33),
 
-	.o11(max1),
+	  .o11(max1),
     .o21(max2),
     .o31(max3),
 
@@ -218,11 +218,11 @@ sort33 sort33_2(
     .o33(min3)
 );
 sort3 s3a(
-	.A(max3),
+  	.A(max3),
     .B(mid2),
     .C(min1),
 
-	.max(max),
+  	.max(max),
     .mid(mid),
     .min(min)
 );
