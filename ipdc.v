@@ -663,7 +663,7 @@ always@(*)begin
 				cb_r[m]  = {{4{1'b0}},input_img[m][7:0]};
 				cb_g[m]  = {{3{1'b0}},input_img[m][15:8],{1'b0}};
 				cb_b[m]  = {{2{1'b0}},input_img[m][23:16],{2{1'b0}}};
-				cb_sum[m] = 12'b0000_1000_0000 + cb_b[m] - cb_r[m] - cb_g[m];
+				cb_sum[m] = 12'b0100_0000_0000 + cb_b[m] - cb_r[m] - cb_g[m];
 				//round and delete the last 3 bits
 				if(cb_sum[m][2]==1'b1)begin                           
 					cb_sum_round[m] = cb_sum[m][11:3] + 9'b0_0000_0001;
@@ -684,7 +684,7 @@ always@(*)begin
 				cr_g1[m] = {{3{1'b0}},input_img[m][15:8],{1'b0}};
 				cr_g2[m] = {{4{1'b0}},input_img[m][15:8]};
 				cr_b[m]  = {{4{1'b0}},input_img[m][23:16]};
-				cr_sum[m] = 12'b0000_1000_0000 + cr_r[m]-cr_g1[m]-cr_g2[m]-cr_b[m];
+				cr_sum[m] = 12'b0100_0000_0000 + cr_r[m]-cr_g1[m]-cr_g2[m]-cr_b[m];
 				//round and delete the last 3 bits
 				if(cr_sum[m][2]==1'b1)begin
 					cr_sum_round[m] = cr_sum[m][11:3] + 9'b0+0000_0001;
