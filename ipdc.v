@@ -260,6 +260,45 @@ always@(*)begin
 	3'b000:begin
 		//do no operation
 		next_fsm_state = fsm_state + 3'b001;
+
+		//latch
+		o_out_valid_w = 1'b0;
+		m11_r_w	= 0;
+		m21_r_w	= 0;	
+		m31_r_w = 0;
+
+		m12_r_w = 0;
+		m22_r_w = 0;
+		m32_r_w = 0;
+
+		m13_r_w = 0;
+		m23_r_w = 0;
+		m33_r_w = 0;
+
+		m11_g_w	= 0;
+		m21_g_w	= 0;	
+		m31_g_w = 0;
+
+		m12_g_w = 0;
+		m22_g_w = 0;
+		m32_g_w = 0;
+
+		m13_g_w = 0;
+		m23_g_w = 0;
+		m33_g_w = 0;
+
+		m11_b_w	= 0;
+		m21_b_w	= 0;	
+		m31_b_w = 0;
+
+		m12_b_w = 0;
+		m22_b_w = 0;
+		m32_b_w = 0;
+
+		m13_b_w = 0;
+		m23_b_w = 0;
+		m33_b_w = 0;
+
 	end
 	3'b001:begin
 		//after loading finished,need to reset the o_out_valid_w
@@ -271,6 +310,44 @@ always@(*)begin
 			3'b000:begin
 				//loading image, no display
 				next_fsm_state = fsm_state + 3'b001;
+				
+				//latch
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
+
 			end
 			3'b001:begin
 				//origin right shift, adjust the origin, need display
@@ -283,6 +360,44 @@ always@(*)begin
 					next_origin_point = origin_point + 7'b0000001;
 				end
 				next_fsm_state = 3'b100;
+
+				//latch
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
+
 			end
 			3'b010:begin
 				//origin down shift, adjust the origin, need display
@@ -295,23 +410,174 @@ always@(*)begin
 					next_origin_point = origin_point + 7'b0001000;
 				end
 				next_fsm_state = 3'b100;
+
+				//latch
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
+
 			end
 			3'b011:begin
 				//default origin, shift the origin to 0, need display
 				next_origin_point = 0;
 				//go to output 16 cycles state
 				next_fsm_state = 3'b100;
+
+				//latch
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
+
 			end
 			3'b100:begin
 				//zoom-in, shift the origin to 18, need display
 				next_origin_point = 7'b0010010;
 				next_fsm_state = 3'b100;
+
+				//latch
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
+
 			end
 			3'b101:begin
 				//median filter, no display
 				for(f_r=0;f_r<64;f_r=f_r+1)begin
 					if(f_r==0 || f_r==7 || f_r==56 || f_r==63)begin
-						next_input_img[f_r] = 0;						
+						next_input_img[f_r] = 0;		
+
+						m11_r_w	= 0;
+						m21_r_w	= 0;	
+						m31_r_w = 0;
+
+						m12_r_w = 0;
+						m22_r_w = 0;
+						m32_r_w = 0;
+
+						m13_r_w = 0;
+						m23_r_w = 0;
+						m33_r_w = 0;
+
+						m11_g_w	= 0;
+						m21_g_w	= 0;	
+						m31_g_w = 0;
+
+						m12_g_w = 0;
+						m22_g_w = 0;
+						m32_g_w = 0;
+
+						m13_g_w = 0;
+						m23_g_w = 0;
+						m33_g_w = 0;
+
+						m11_b_w	= 0;
+						m21_b_w	= 0;	
+						m31_b_w = 0;
+
+						m12_b_w = 0;
+						m22_b_w = 0;
+						m32_b_w = 0;
+
+						m13_b_w = 0;
+						m23_b_w = 0;
+						m33_b_w = 0;
+
 					end  
 					//------------------------------------------------------------------------------------------------//
 					//-------------------------------------------------up row-----------------------------------------//
@@ -558,9 +824,6 @@ always@(*)begin
 					end
 				end
 
-
-
-
 				next_fsm_state = 3'b001;
 			end
 			3'b110:begin
@@ -568,18 +831,130 @@ always@(*)begin
 				ycbcr_mode = 1'b1;	
 				o_out_valid_w = 1'b1;
 				next_fsm_state = 3'b001;		
+
+				//latch
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
 			end
 			3'b111:begin
 				//RGB mode no display
 				ycbcr_mode = 1'b0;
 				o_out_valid_w = 1'b1;
 				next_fsm_state = 3'b001;
+
+				//latch
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
 			end
 			endcase
 		end
 		1'b0:begin
 			//condition when i_op_mode is not valid, re-choosing
 			next_fsm_state = 3'b001;
+
+			//latch
+		m11_r_w	= 0;
+		m21_r_w	= 0;	
+		m31_r_w = 0;
+
+		m12_r_w = 0;
+		m22_r_w = 0;
+		m32_r_w = 0;
+
+		m13_r_w = 0;
+		m23_r_w = 0;
+		m33_r_w = 0;
+
+		m11_g_w	= 0;
+		m21_g_w	= 0;	
+		m31_g_w = 0;
+
+		m12_g_w = 0;
+		m22_g_w = 0;
+		m32_g_w = 0;
+
+		m13_g_w = 0;
+		m23_g_w = 0;
+		m33_g_w = 0;
+
+		m11_b_w	= 0;
+		m21_b_w	= 0;	
+		m31_b_w = 0;
+
+		m12_b_w = 0;
+		m22_b_w = 0;
+		m32_b_w = 0;
+
+		m13_b_w = 0;
+		m23_b_w = 0;
+		m33_b_w = 0;
+
 		end
 		endcase
 	end
@@ -606,11 +981,89 @@ always@(*)begin
 			sram_d_w = 0;
 			//--------------------------------------
 		end
+		o_out_valid_w = 1'b0;
+
+		//latch
+		m11_r_w	= 0;
+		m21_r_w	= 0;	
+		m31_r_w = 0;
+
+		m12_r_w = 0;
+		m22_r_w = 0;
+		m32_r_w = 0;
+
+		m13_r_w = 0;
+		m23_r_w = 0;
+		m33_r_w = 0;
+
+		m11_g_w	= 0;
+		m21_g_w	= 0;	
+		m31_g_w = 0;
+
+		m12_g_w = 0;
+		m22_g_w = 0;
+		m32_g_w = 0;
+
+		m13_g_w = 0;
+		m23_g_w = 0;
+		m33_g_w = 0;
+
+		m11_b_w	= 0;
+		m21_b_w	= 0;	
+		m31_b_w = 0;
+
+		m12_b_w = 0;
+		m22_b_w = 0;
+		m32_b_w = 0;
+
+		m13_b_w = 0;
+		m23_b_w = 0;
+		m33_b_w = 0;
+
+
 	end
 	3'b011:begin
 		//loading finish, set the o_out_valid 1 cycle
 		o_out_valid_w = 1'b1;
 		next_fsm_state = 3'b001;
+
+		//latch
+		m11_r_w	= 0;
+		m21_r_w	= 0;	
+		m31_r_w = 0;
+
+		m12_r_w = 0;
+		m22_r_w = 0;
+		m32_r_w = 0;
+
+		m13_r_w = 0;
+		m23_r_w = 0;
+		m33_r_w = 0;
+
+		m11_g_w	= 0;
+		m21_g_w	= 0;	
+		m31_g_w = 0;
+
+		m12_g_w = 0;
+		m22_g_w = 0;
+		m32_g_w = 0;
+
+		m13_g_w = 0;
+		m23_g_w = 0;
+		m33_g_w = 0;
+
+		m11_b_w	= 0;
+		m21_b_w	= 0;	
+		m31_b_w = 0;
+
+		m12_b_w = 0;
+		m22_b_w = 0;
+		m32_b_w = 0;
+
+		m13_b_w = 0;
+		m23_b_w = 0;
+		m33_b_w = 0;
+
 	end
 	3'b100:begin  //output 16 cycles
 		if(ycbcr_mode == 1'b0)begin //now is rgb mode
@@ -723,10 +1176,86 @@ always@(*)begin
 				next_fsm_state = 3'b001;
 			end
 		end
+
+		//latch
+		m11_r_w	= 0;
+		m21_r_w	= 0;	
+		m31_r_w = 0;
+
+		m12_r_w = 0;
+		m22_r_w = 0;
+		m32_r_w = 0;
+
+		m13_r_w = 0;
+		m23_r_w = 0;
+		m33_r_w = 0;
+
+		m11_g_w	= 0;
+		m21_g_w	= 0;	
+		m31_g_w = 0;
+
+		m12_g_w = 0;
+		m22_g_w = 0;
+		m32_g_w = 0;
+
+		m13_g_w = 0;
+		m23_g_w = 0;
+		m33_g_w = 0;
+
+		m11_b_w	= 0;
+		m21_b_w	= 0;	
+		m31_b_w = 0;
+
+		m12_b_w = 0;
+		m22_b_w = 0;
+		m32_b_w = 0;
+
+		m13_b_w = 0;
+		m23_b_w = 0;
+		m33_b_w = 0;
+
 	end
 	default:begin
 		//do no operation
 		next_fsm_state = 3'b001;
+		o_out_valid_w = 1'b0;
+
+		//latch
+		m11_r_w	= 0;
+		m21_r_w	= 0;	
+		m31_r_w = 0;
+
+		m12_r_w = 0;
+		m22_r_w = 0;
+		m32_r_w = 0;
+
+		m13_r_w = 0;
+		m23_r_w = 0;
+		m33_r_w = 0;
+
+		m11_g_w	= 0;
+		m21_g_w	= 0;	
+		m31_g_w = 0;
+
+		m12_g_w = 0;
+		m22_g_w = 0;
+		m32_g_w = 0;
+
+		m13_g_w = 0;
+		m23_g_w = 0;
+		m33_g_w = 0;
+
+		m11_b_w	= 0;
+		m21_b_w	= 0;	
+		m31_b_w = 0;
+
+		m12_b_w = 0;
+		m22_b_w = 0;
+		m32_b_w = 0;
+
+		m13_b_w = 0;
+		m23_b_w = 0;
+		m33_b_w = 0;
 	end
 	endcase
 end
@@ -842,9 +1371,9 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		for(cf6=0; cf6<64; cf6=cf6+1) compare_flag6_r[cf6] <= 0;*/
 
 		//---memory-----
-		sram_wen_w = 0;
-		sram_a_w = 0;
-		sram_d_w = 0;
+		sram_wen_w <= 0;
+		sram_a_w <= 0;
+		sram_d_w <= 0;
 		//--------------
 	end
 	else begin
@@ -853,14 +1382,6 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		o_out_data_r <= o_out_data_w;
 	end
 end
-//take this part off
-//All inputs are synchronized with the negative edge clock
-/*always(@negedge i_clk)begin
-	i_op_valid_w <= i_op_valid;
-	i_op_mode_w  <= i_op_mode;
-	i_in_valid_w <= i_in_valid;
-	i_in_data_w  <= i_in_data;
-end*/
 
 always@(negedge i_clk)begin
 	fsm_state <= next_fsm_state;
