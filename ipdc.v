@@ -724,6 +724,10 @@ always@(*)begin
 			end
 		end
 	end
+	default:begin
+		//do no operation
+		next_fsm_state = 3'b001;
+	end
 	endcase
 end
 
