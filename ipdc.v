@@ -83,6 +83,8 @@ reg [ 8:0] cr_sum_round[0:63];
 //detect the mode to output
 integer s,t;
 reg ycbcr_mode;
+reg next_ycbcr_mode;
+
 reg [23:0] current_ycbcr_img [0:63];
 reg [23:0] next_current_ycbcr_img [0:63];
 
@@ -110,6 +112,11 @@ wire [7:0]  sram_q;   //data outputs
 reg [7:0] sram_wen_w;
 reg [7:0] sram_d_w;
 reg [7:0] sram_a_w;
+
+reg [7:0] next_sram_wen_w;
+reg [7:0] next_sram_d_w;
+reg [7:0] next_sram_a_w;
+
 
 //R channel declaration
 wire [7:0] m11_r, m21_r, m31_r;
@@ -265,7 +272,15 @@ always@(*)begin
 
 	for(latch_1=0; latch_1<64;latch_1 = latch_1+1) next_input_img[latch_1] = input_img[latch_1];
 	next_fsm_state = fsm_state;
+	next_register_no = register_no;
+	next_origin_point = origin_point;
+	next_output_counter = output_counter;
+	next_ycbcr_mode = ycbcr_mode;
 
+	next_sram_wen_w = sram_wen_w;
+	next_sram_d_w = sram_d_w;
+	next_sram_a_w = sram_a_w;
+	
 	o_in_ready_w = o_in_ready_r;
 	o_out_valid_w = o_out_valid_r;
 	o_out_data_w = o_out_data_r;
@@ -850,7 +865,7 @@ always@(*)begin
 			end
 			3'b110:begin
 				//YcbCr, no display
-				ycbcr_mode = 1'b1;	
+				next_ycbcr_mode = 1'b1;	
 				o_out_valid_w = 1'b1;
 				next_fsm_state = 3'b001;		
 
@@ -896,7 +911,7 @@ always@(*)begin
 			end
 			3'b111:begin
 				//RGB mode no display
-				ycbcr_mode = 1'b0;
+				next_ycbcr_mode = 1'b0;
 				o_out_valid_w = 1'b1;
 				next_fsm_state = 3'b001;
 
@@ -995,18 +1010,18 @@ always@(*)begin
 			//$display("reg num. %d = %b",register_no,next_input_img[register_no]);
 
 			//------------memory operate------------
-			sram_wen_w = 1'b1;
-			sram_a_w = {{1'b0},register_no};
-			sram_d_w = i_in_data;
+			next_sram_wen_w = 1'b1;
+			next_sram_a_w = {{1'b0},register_no};
+			next_sram_d_w = i_in_data;
 			//--------------------------------------
 		end
 		else begin
 			next_register_no = 0;
 			next_fsm_state = 3'b011;			
 			//------------memory operate------------
-			sram_wen_w = 1'b0;
-			sram_a_w = 0;
-			sram_d_w = 0;
+			next_sram_wen_w = 1'b0;
+			next_sram_a_w = 0;
+			next_sram_d_w = 0;
 			//--------------------------------------
 		end
 		o_out_valid_w = 1'b0;
@@ -1324,18 +1339,19 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 
 		for(i=0; i<16; i=i+1) output_img[i] <= 0;
 		for(j=0; j<64; j=j+1) input_img[j]  <= 0;
+		//for(k=0; k<64; k=k+1) next_input_img[k] <= 0;
 
 		fsm_state       <= 3'b001; 
 		//next_fsm_state  <= 3'b001;
 
 		register_no      <= 0;
-		next_register_no <= 0;
+		//next_register_no <= 0;
 
 		origin_point      <= 0;
-		next_origin_point <= 0;
+		//next_origin_point <= 0;
 
 		output_counter      <= 0;
-		next_output_counter <= 0;
+		//next_output_counter <= 0;
 
 		output_position     <= 0;
 		position_bias       <= 0;
@@ -1360,10 +1376,11 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 		for(sss=0; sss<64;sss=sss+1) cr_sum_round[sss] <= 0;
 
 		ycbcr_mode <= 0;
+		
 		for(s=0; s<64; s=s+1) current_ycbcr_img[s] <= 0;
 		for(t=0; t<64; t=t+1) next_current_ycbcr_img[t] <= 0;
 
-		for(k=0; k<64; k=k+1) next_input_img[k] <= 0;
+		
 
 
 		//---memory-----
@@ -1377,7 +1394,15 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 		register_no <= next_register_no;
 		origin_point <= next_origin_point;
 		output_counter <= next_output_counter;
+		ycbcr_mode <= next_ycbcr_mode;
 		for(kk=0; kk<64; kk=kk+1) input_img[kk] <= next_input_img[kk];
+
+		//----memory---
+		sram_wen_w <= next_sram_wen_w;
+		sram_a_w <= next_sram_d_w;
+		sram_d_w <= next_sram_a_w;
+		//----memory---
+
 	end	
 end
 
@@ -1409,9 +1434,9 @@ endmodule
 //moduele for only 3 numbers
 module sort_3_number(
 
-	input [7:0] a,
-	input [7:0] b,
-	input [7:0] c,
+	input [7:0] num1,
+	input [7:0] num2,
+	input [7:0] num3,
 
 	output [7:0] max,
 	output [7:0] mid,
@@ -1425,128 +1450,49 @@ assign mid = next_mid;
 assign min = next_min;
 
 always@(*)begin
-	if(a>=b)begin
-		if(b>=c)begin
-			next_max = a;
-			next_mid = b;
-			next_min = c;
+	if(num1>=num2)begin
+		if(num2>=num3)begin
+			next_max = num1;
+			next_mid = num2;
+			next_min = num3;
 		end
-		else begin    //c>b
-			if(a>=c)begin 
-				next_max = a;
-				next_mid = c;
-				next_min = b;
+		else begin    //num3>num2
+			if(num1>=num3)begin 
+				next_max = num1;
+				next_mid = num3;
+				next_min = num2;
 			end
-			else begin   //c>a
-				next_max = c;
-				next_mid = a;
-				next_min = b;
+			else begin   //num3>num1
+				next_max = num3;
+				next_mid = num1;
+				next_min = num2;
 			end
 		end		
 	end
-	else begin //b>a
-		if(a>=c)begin
-			next_max = b;
-			next_mid = a;
-			next_min = c;
+	else begin //num2>num1
+		if(num1>=num3)begin
+			next_max = num2;
+			next_mid = num1;
+			next_min = num3;
 		end
-		else begin //c>a
-			if(b>=c)begin
-				next_max = b;
-				next_mid = c;
-				next_min = a;
+		else begin //num3>num1
+			if(num2>=num3)begin
+				next_max = num2;
+				next_mid = num3;
+				next_min = num1;
 			end
-			else begin //c>b
-				next_max = c;
-				next_mid = b;
-				next_min = a;
+			else begin //num3>num2
+				next_max = num3;
+				next_mid = num2;
+				next_min = num1;
 			end
 		end
 	end	
-
-
-
 
 end
 
 endmodule
 
-
-//module for sort row
-module sort_row(
-	input [7:0] i_position_1_1,
-	input [7:0] i_position_2_1,
-	input [7:0] i_position_3_1,
-
-	input [7:0] i_position_1_2,
-	input [7:0] i_position_2_2,
-	input [7:0] i_position_3_2,
-
-	input [7:0] i_position_1_3,
-	input [7:0] i_position_2_3,
-	input [7:0] i_position_3_3,
-
-	output [7:0] o_position_1_1,
-	output [7:0] o_position_2_1,
-	output [7:0] o_position_3_1,
-
-	output [7:0] o_position_1_2,
-	output [7:0] o_position_2_2,
-	output [7:0] o_position_3_2,
-
-	output [7:0] o_position_1_3,
-	output [7:0] o_position_2_3,
-	output [7:0] o_position_3_3
-);
-
-wire [7:0] max_1,mid_1,min_1;
-wire [7:0] max_2,mid_2,min_2;
-wire [7:0] max_3,mid_3,min_3;
-
-sort_3_number s_1(
-	.a(i_position_1_1),
-	.b(i_position_2_1),
-	.c(i_position_3_1),
-
-	.max(max_1),
-	.mid(mid_1),
-	.min(min_1)	
-);
-sort_3_number s_2(
-	.a(i_position_1_2),
-	.b(i_position_2_2),
-	.c(i_position_3_2),
-
-	.max(max_2),
-	.mid(mid_2),
-	.min(min_2)	
-);
-sort_3_number s_3(
-	.a(i_position_1_3),
-	.b(i_position_2_3),
-	.c(i_position_3_3),
-
-	.max(max_3),
-	.mid(mid_3),
-	.min(min_3)	
-);
-
-
-assign o_position_1_1 = max_1;
-assign o_position_2_1 = mid_1;
-assign o_position_3_1 = min_1;
-
-assign o_position_1_2 = max_2;
-assign o_position_2_2 = mid_2;
-assign o_position_3_2 = min_2;
-
-assign o_position_1_3 = max_3;
-assign o_position_2_3 = mid_3;
-assign o_position_3_3 = min_3;
-
-endmodule
-
-// last module for choose the median
 module choose_median(
 	input [7:0] i_position_1_1,
 	input [7:0] i_position_2_1,
@@ -1562,7 +1508,6 @@ module choose_median(
 
 	output [7:0] median
 );
-
 wire [7:0]  temp_1_1,temp_2_1,temp_3_1;
 wire [7:0]  temp_1_2,temp_2_2,temp_3_2;
 wire [7:0]  temp_1_3,temp_2_3,temp_3_3;
@@ -1573,69 +1518,73 @@ wire [7:0]  temp_max_3,temp_mid_3,temp_min_3;
 
 wire [7:0]  last_max,last_mid,last_min;
 
-
-sort_row sort_row_1(
-	.i_position_1_1(i_position_1_1),
-	.i_position_2_1(i_position_2_1),
-	.i_position_3_1(i_position_3_1),
-
-	.i_position_1_2(i_position_1_2),
-	.i_position_2_2(i_position_2_2),
-	.i_position_3_2(i_position_3_2),
-
-	.i_position_1_3(i_position_1_3),
-	.i_position_2_3(i_position_2_3),
-	.i_position_3_3(i_position_3_3),
-
-	.o_position_1_1(temp_1_1),
-	.o_position_2_1(temp_2_1),
-	.o_position_3_1(temp_3_1),
-
-	.o_position_1_2(temp_1_2),
-	.o_position_2_2(temp_2_2),
-	.o_position_3_2(temp_3_2),
-
-	.o_position_1_3(temp_1_3),
-	.o_position_2_3(temp_2_3),
-	.o_position_3_3(temp_3_3)
+sort_3_number column_1(
+	.num1(i_position_1_1),
+	.num2(i_position_2_1),
+	.num3(i_position_3_1),
+	
+	.max(temp_1_1),
+	.mid(temp_2_1),
+	.min(temp_3_1)
+);
+sort_3_number column_2(
+	.num1(i_position_1_2),
+	.num2(i_position_2_2),
+	.num3(i_position_3_2),
+	
+	.max(temp_1_1),
+	.mid(temp_2_1),
+	.min(temp_3_1)
 );
 
-sort_row sort_row_2(
-	.i_position_1_1(temp_1_1),
-	.i_position_2_1(temp_1_2),
-	.i_position_3_1(temp_1_3),
-
-	.i_position_1_2(temp_2_1),
-	.i_position_2_2(temp_2_2),
-	.i_position_3_2(temp_2_3),
-
-	.i_position_1_3(temp_3_1),
-	.i_position_2_3(temp_3_2),
-	.i_position_3_3(temp_3_3),	
-
-	.o_position_1_1(temp_max_1),
-	.o_position_2_1(temp_max_2),
-	.o_position_3_1(temp_max_3),
-
-	.o_position_1_2(temp_mid_1),
-	.o_position_2_2(temp_mid_2),
-	.o_position_3_2(temp_mid_3),
-
-	.o_position_1_3(temp_min_1),
-	.o_position_2_3(temp_min_2),
-	.o_position_3_3(temp_min_3)
+sort_3_number column_3(
+	.num1(i_position_1_3),
+	.num2(i_position_2_3),
+	.num3(i_position_3_3),
+	
+	.max(temp_1_3),
+	.mid(temp_2_3),
+	.min(temp_3_3)
 );
 
+sort_3_number row_1(
+	.num1(temp_1_1),
+	.num2(temp_1_2),
+	.num3(temp_1_3),
+	
+	.max(temp_max_1),
+	.mid(temp_max_2),
+	.min(temp_max_3)
+);
+sort_3_number row_2(
+	.num1(temp_2_1),
+	.num2(temp_2_2),
+	.num3(temp_2_3),
+	
+	.max(temp_mid_1),
+	.mid(temp_mid_2),
+	.min(temp_mid_3)
+);
+sort_3_number row_3(
+	.num1(temp_3_1),
+	.num2(temp_3_2),
+	.num3(temp_3_3),
+	
+	.max(temp_min_1),
+	.mid(temp_min_2),
+	.min(temp_min_3)
+);
 sort_3_number last_sort(
-	.a(temp_max_3),
-	.b(temp_mid_2),
-	.c(temp_min_1),
+	.num1(temp_max_3),
+	.num2(temp_mid_2),
+	.num3(temp_min_1),
 
 	.max(last_max),
 	.mid(last_mid),
 	.min(last_min)
 );
 
-assign median = last_mid;
 
 endmodule
+
+//#############################################
