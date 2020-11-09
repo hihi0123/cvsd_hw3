@@ -95,6 +95,12 @@ reg     compare_flag3_r[0:63];
 reg     compare_flag4_r[0:63];
 reg     compare_flag5_r[0:63];
 reg     compare_flag6_r[0:63];*/
+
+//integer for kill latch
+integer latch_1,latch_2,latch_3,latch_4,latch_5,latch_6,latch_7,latch_8,latch_9;
+integer latch_11,latch_12,latch_13,latch_14;
+
+
 //sram reg
 wire        sram_wen; //write enable
 wire [7:0]  sram_a;   //address
@@ -256,6 +262,14 @@ sram_256x8 u_R_sram (
 // ---------------------------------------------------------------------------
 // ---- Write your conbinational block design here ---- //
 always@(*)begin
+
+	for(latch_1=0; latch_1<64;latch_1 = latch_1+1) next_input_img[latch_1] = input_img[latch_1];
+	next_fsm_state = fsm_state;
+
+	o_in_ready_w = o_in_ready_r;
+	o_out_valid_w = o_out_valid_r;
+	o_out_data_w = o_out_data_r;
+
 	case(fsm_state)
 	3'b000:begin
 		//do no operation
@@ -298,6 +312,8 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+
+		//for(latch_1=0; latch_1<64;latch_1 = latch_1+1) next_input_img[latch_1] = input_img[latch_1];		
 
 	end
 	3'b001:begin
@@ -348,6 +364,7 @@ always@(*)begin
 				m23_b_w = 0;
 				m33_b_w = 0;
 
+				//for(latch_6=0; latch_6 <64;latch_6 = latch_6 + 1) next_input_img[latch_6] = input_img[latch_6];
 			end
 			3'b001:begin
 				//origin right shift, adjust the origin, need display
@@ -397,6 +414,8 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				
+				//for(latch_7=0; latch_7 <64;latch_7 = latch_7 + 1) next_input_img[latch_7] = input_img[latch_7];
 
 			end
 			3'b010:begin
@@ -447,7 +466,7 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
-
+				//for(latch_8=0; latch_8 <64;latch_8 = latch_8 + 1) next_input_img[latch_8] = input_img[latch_8];
 			end
 			3'b011:begin
 				//default origin, shift the origin to 0, need display
@@ -491,6 +510,7 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				//for(latch_9=0; latch_9 <64;latch_9 = latch_9 + 1) next_input_img[latch_9] = input_img[latch_9];
 
 			end
 			3'b100:begin
@@ -534,6 +554,8 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+
+				//for(latch_11=0; latch_11 <64;latch_11 = latch_11 + 1) next_input_img[latch_11] = input_img[latch_11];
 
 			end
 			3'b101:begin
@@ -868,6 +890,9 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+
+				//for(latch_12=0; latch_12 <64;latch_12 = latch_12 + 1) next_input_img[latch_12] = input_img[latch_12];
+
 			end
 			3'b111:begin
 				//RGB mode no display
@@ -911,6 +936,7 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				//for(latch_13=0; latch_13 <64;latch_13 = latch_13 + 1) next_input_img[latch_13] = input_img[latch_13];
 			end
 			endcase
 		end
@@ -954,6 +980,8 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+		
+		//for(latch_14=0; latch_14 <64;latch_14 = latch_14 + 1) next_input_img[latch_14] = input_img[latch_14];
 
 		end
 		endcase
@@ -1020,6 +1048,7 @@ always@(*)begin
 		m23_b_w = 0;
 		m33_b_w = 0;
 
+		//for(latch_2=0; latch_2 <64;latch_2 = latch_2 + 1) next_input_img[latch_2] = input_img[latch_2];
 
 	end
 	3'b011:begin
@@ -1064,6 +1093,7 @@ always@(*)begin
 		m23_b_w = 0;
 		m33_b_w = 0;
 
+		//for(latch_3=0; latch_3 <64;latch_3 = latch_3 + 1) next_input_img[latch_3] = input_img[latch_3];
 	end
 	3'b100:begin  //output 16 cycles
 		if(ycbcr_mode == 1'b0)begin //now is rgb mode
@@ -1213,6 +1243,7 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+		//for(latch_4=0; latch_4 <64;latch_4 = latch_4 + 1) next_input_img[latch_4] = input_img[latch_4];
 
 	end
 	default:begin
@@ -1256,41 +1287,11 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+
+		//for(latch_5=0; latch_5 <64;latch_5 = latch_5 + 1) next_input_img[latch_5] = input_img[latch_5];
 	end
 	endcase
 end
-
-//----------------------------------------------------------------------------
-// function block
-//----------------------------------------------------------------------------
-/*function choose_median;
-input [7:0] a,b,c,d,e,f;
-if(a>=b && a<b && a<c && a<d && a<e && a<f)begin
-	choose_median = 1'b1;
-end
-else if (a<b && a>=b && a<c && a<d && a<e && a<f) begin
-	choose_median = 1'b1;
-end
-else if(a<b && a>=b && a<c && a<d && a<e && a<f)begin
-	choose_median = 1'b1;
-end
-else if(a<b && a<b && a>=c && a<d && a<e && a<f)begin
-	choose_median = 1'b1;
-end
-else if(a<b && a<b && a<c && a>=d && a<e && a<f)begin
-	choose_median = 1'b1;
-end
-else if(a<b && a<b && a<c && a<d && a>=e && a<f)begin
-	choose_median = 1'b1;
-end
-else if(a<b && a<b && a<c && a<d && a<e && a>=f)begin
-	choose_median = 1'b1;
-end
-else begin
-	choose_median = 1'b0;
-end
-
-endfunction*/
 
 
 // ---------------------------------------------------------------------------
@@ -1300,29 +1301,32 @@ endfunction*/
 
 //All outputs should be synchronized at clock rising edge.
 //reset signal
-always@(posedge i_clk or negedge i_rst_n)begin
+always@(posedge i_clk or negedge i_rst_n )begin
 	if(!i_rst_n)begin
-		//initialize
-
 		//output register
 		o_in_ready_r <= 1'b1;
-		o_in_ready_w <= 1'b1;
+		//o_in_ready_w <= 1'b1;
 		o_out_valid_r <= 0;
-		o_out_valid_w <= 0;
-		o_out_data_w <= 0;
+		//o_out_valid_w <= 0;
 		o_out_data_r <= 0;
+		//o_out_data_w <= 0;
+	end
+	else begin
+		o_in_ready_r <= o_in_ready_w;
+		o_out_valid_r <= o_out_valid_w;
+		o_out_data_r <= o_out_data_w;
+	end
+end
 
-		//input register
-		/*i_op_valid_w <= 0;
-		i_op_mode_w <= 0;
-		i_in_valid_w <= 0;
-		i_in_data_w  <= 0;*/
+always@(negedge i_clk  or negedge i_rst_n )begin
+	if(!i_rst_n)begin
+		//initialize
 
 		for(i=0; i<16; i=i+1) output_img[i] <= 0;
 		for(j=0; j<64; j=j+1) input_img[j]  <= 0;
 
 		fsm_state       <= 3'b001; 
-		next_fsm_state  <= 3'b001;
+		//next_fsm_state  <= 3'b001;
 
 		register_no      <= 0;
 		next_register_no <= 0;
@@ -1362,14 +1366,6 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		for(k=0; k<64; k=k+1) next_input_img[k] <= 0;
 
 
-		//for conpare_flag
-		/*for(cf1=0; cf1<64; cf1=cf1+1) compare_flag1_r[cf1] <= 0;
-		for(cf2=0; cf2<64; cf2=cf2+1) compare_flag2_r[cf2] <= 0;
-		for(cf3=0; cf3<64; cf3=cf3+1) compare_flag3_r[cf3] <= 0;
-		for(cf4=0; cf4<64; cf4=cf4+1) compare_flag4_r[cf4] <= 0;
-		for(cf5=0; cf5<64; cf5=cf5+1) compare_flag5_r[cf5] <= 0;
-		for(cf6=0; cf6<64; cf6=cf6+1) compare_flag6_r[cf6] <= 0;*/
-
 		//---memory-----
 		sram_wen_w <= 0;
 		sram_a_w <= 0;
@@ -1377,17 +1373,15 @@ always@(posedge i_clk or negedge i_rst_n)begin
 		//--------------
 	end
 	else begin
-		o_in_ready_r <= o_in_ready_w;
-		o_out_valid_r <= o_out_valid_w;
-		o_out_data_r <= o_out_data_w;
-	end
+		fsm_state <= next_fsm_state;
+		register_no <= next_register_no;
+		origin_point <= next_origin_point;
+		output_counter <= next_output_counter;
+		for(kk=0; kk<64; kk=kk+1) input_img[kk] <= next_input_img[kk];
+	end	
 end
 
-always@(negedge i_clk)begin
-	fsm_state <= next_fsm_state;
-end
-
-always@(negedge i_clk)begin
+/*always@(negedge i_clk)begin
 	register_no <= next_register_no;
 end
 
@@ -1401,7 +1395,7 @@ end
 
 always@(negedge i_clk)begin
 	for(kk=0; kk<64; kk=kk+1) input_img[kk] <= next_input_img[kk];
-end
+end*/
 
 
 
