@@ -98,6 +98,12 @@ reg     compare_flag4_r[0:63];
 reg     compare_flag5_r[0:63];
 reg     compare_flag6_r[0:63];*/
 
+reg [7:0] filter_counter;
+reg [7:0] next_filter_counter;
+reg[23:0] filter_img[0:63];
+reg[23:0] next_filter_img[0:63];
+
+
 //integer for kill latch
 integer latch_1,latch_2,latch_3,latch_4,latch_5,latch_6,latch_7,latch_8,latch_9;
 integer latch_11,latch_12,latch_13,latch_14;
@@ -276,6 +282,9 @@ always@(*)begin
 	next_origin_point = origin_point;
 	next_output_counter = output_counter;
 	next_ycbcr_mode = ycbcr_mode;
+	
+	next_filter_counter = filter_counter;
+	for(latch_3=0;latch_3<64;latch_3 = latch_3+1) next_filter_img[latch_3] = filter_img[latch_3];
 
 	next_sram_wen_w = sram_wen_w;
 	next_sram_d_w = sram_d_w;
@@ -327,9 +336,7 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
-
-		//for(latch_1=0; latch_1<64;latch_1 = latch_1+1) next_input_img[latch_1] = input_img[latch_1];		
-
+			
 	end
 	3'b001:begin
 		//after loading finished,need to reset the o_out_valid_w
@@ -379,7 +386,7 @@ always@(*)begin
 				m23_b_w = 0;
 				m33_b_w = 0;
 
-				//for(latch_6=0; latch_6 <64;latch_6 = latch_6 + 1) next_input_img[latch_6] = input_img[latch_6];
+				
 			end
 			3'b001:begin
 				//origin right shift, adjust the origin, need display
@@ -575,7 +582,42 @@ always@(*)begin
 			end
 			3'b101:begin
 				//median filter, no display
-				for(f_r=0;f_r<64;f_r=f_r+1)begin
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
+			/*	for(f_r=0;f_r<64;f_r=f_r+1)begin
 					if(f_r==0 || f_r==7 || f_r==56 || f_r==63)begin
 						next_input_img[f_r] = 0;		
 
@@ -861,7 +903,10 @@ always@(*)begin
 					end
 				end
 
-				next_fsm_state = 3'b001;
+				o_out_valid_w = 1'b1;
+				next_fsm_state = 3'b001;*/
+				next_fsm_state = 3'b101;
+				
 			end
 			3'b110:begin
 				//YcbCr, no display
@@ -1063,7 +1108,7 @@ always@(*)begin
 		m23_b_w = 0;
 		m33_b_w = 0;
 
-		//for(latch_2=0; latch_2 <64;latch_2 = latch_2 + 1) next_input_img[latch_2] = input_img[latch_2];
+		
 
 	end
 	3'b011:begin
@@ -1108,7 +1153,7 @@ always@(*)begin
 		m23_b_w = 0;
 		m33_b_w = 0;
 
-		//for(latch_3=0; latch_3 <64;latch_3 = latch_3 + 1) next_input_img[latch_3] = input_img[latch_3];
+		
 	end
 	3'b100:begin  //output 16 cycles
 		if(ycbcr_mode == 1'b0)begin //now is rgb mode
@@ -1258,9 +1303,373 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
-		//for(latch_4=0; latch_4 <64;latch_4 = latch_4 + 1) next_input_img[latch_4] = input_img[latch_4];
+		
 
 	end
+	3'b101:begin
+		//do the median filter,64cycles
+		if(filter_counter != 7'b1000000)begin
+			if(filter_counter == 7'd0 || filter_counter ==7'd7 || filter_counter == 7'd56 || filter_counter == 7'd63 )begin
+				next_filter_img[filter_counter] = 0;
+				//maybe lack something?
+				//latch
+				m11_r_w	= 0;
+				m21_r_w	= 0;	
+				m31_r_w = 0;
+
+				m12_r_w = 0;
+				m22_r_w = 0;
+				m32_r_w = 0;
+
+				m13_r_w = 0;
+				m23_r_w = 0;
+				m33_r_w = 0;
+
+				m11_g_w	= 0;
+				m21_g_w	= 0;	
+				m31_g_w = 0;
+
+				m12_g_w = 0;
+				m22_g_w = 0;
+				m32_g_w = 0;
+
+				m13_g_w = 0;
+				m23_g_w = 0;
+				m33_g_w = 0;
+
+				m11_b_w	= 0;
+				m21_b_w	= 0;	
+				m31_b_w = 0;
+
+				m12_b_w = 0;
+				m22_b_w = 0;
+				m32_b_w = 0;
+
+				m13_b_w = 0;
+				m23_b_w = 0;
+				m33_b_w = 0;
+			end
+			else if(filter_counter ==7'd1 || filter_counter ==7'd2 || filter_counter ==7'd3 || filter_counter == 7'd4 ||filter_counter == 7'd5 || filter_counter == 7'd6)begin
+				// R channel
+				m11_r_w = 8'b0000_0000;
+				m21_r_w = input_img[filter_counter-1][7:0];
+				m31_r_w = input_img[filter_counter+7][7:0];
+
+				m12_r_w = 8'b0000_0000;
+				m22_r_w = input_img[filter_counter][7:0];
+				m32_r_w = input_img[filter_counter+8][7:0];
+
+				m13_r_w = 8'b0000_0000;
+				m23_r_w = input_img[filter_counter+1][7:0];
+				m33_r_w = input_img[filter_counter+9][7:0];
+
+				next_filter_img[filter_counter][7:0] = answer_r;
+
+				//G channel
+				m11_g_w = 8'b0000_0000;
+				m21_g_w = input_img[filter_counter-1][15:8];
+				m31_g_w = input_img[filter_counter+7][15:8];
+
+				m12_g_w = 8'b0000_0000;
+				m22_g_w = input_img[filter_counter][15:8];
+				m32_g_w = input_img[filter_counter+8][15:8];
+
+				m13_g_w = 8'b0000_0000;
+				m23_g_w = input_img[filter_counter+1][15:8];
+				m33_g_w = input_img[filter_counter+9][15:8];
+
+				next_filter_img[filter_counter][15:8] = answer_g;
+
+				//B channel
+				m11_b_w = 8'b0000_0000;
+				m21_b_w = input_img[filter_counter-1][23:16];
+				m31_b_w = input_img[filter_counter+7][23:16];
+
+				m12_b_w = 8'b0000_0000;
+				m22_b_w = input_img[filter_counter][23:16];
+				m32_b_w = input_img[filter_counter+8][23:16];
+
+				m13_b_w = 8'b0000_0000;
+				m23_b_w = input_img[filter_counter+1][23:16];
+				m33_b_w = input_img[filter_counter+9][23:16];
+
+				next_filter_img[filter_counter][23:16] = answer_b;
+			end
+			else if(filter_counter ==7'd8 || filter_counter ==7'd16 || filter_counter ==7'd24 || filter_counter ==7'd32 || filter_counter ==7'd40 || filter_counter==7'd48)begin
+				//R channel
+				m11_r_w = 8'b0000_0000;
+				m21_r_w = 8'b0000_0000;
+				m31_r_w = 8'b0000_0000;
+
+				m12_r_w = input_img[filter_counter-8][7:0];
+				m22_r_w = input_img[filter_counter][7:0];
+				m32_r_w = input_img[filter_counter+8][7:0];
+
+				m13_r_w = input_img[filter_counter-7][7:0];
+				m23_r_w = input_img[filter_counter+1][7:0];
+				m33_r_w = input_img[filter_counter+9][7:0];
+
+				next_filter_img[filter_counter][7:0] = answer_r;
+
+				//G channel
+				m11_g_w = 8'b0000_0000;
+				m21_g_w = 8'b0000_0000;
+				m31_g_w = 8'b0000_0000;
+
+				m12_g_w = input_img[filter_counter-8][15:8];
+				m22_g_w = input_img[filter_counter][15:8];
+				m32_g_w = input_img[filter_counter+8][15:8];
+
+				m13_g_w = input_img[filter_counter-7][15:8];
+				m23_g_w = input_img[filter_counter+1][15:8];
+				m33_g_w = input_img[filter_counter+9][15:8];
+
+				next_filter_img[filter_counter][15:8] = answer_g;
+
+				//B channel
+				m11_b_w = 8'b0000_0000;
+				m21_b_w = 8'b0000_0000;
+				m31_b_w = 8'b0000_0000;
+
+				m12_b_w = input_img[filter_counter-8][23:16];
+				m22_b_w = input_img[filter_counter][23:16];
+				m32_b_w = input_img[filter_counter+8][23:16];
+
+				m13_b_w = input_img[filter_counter-7][23:16];
+				m23_b_w = input_img[filter_counter+1][23:16];
+				m33_b_w = input_img[filter_counter+9][23:16];
+
+				next_filter_img[filter_counter][23:16] = answer_b;
+
+			end
+			else if(filter_counter ==7'd15 || filter_counter ==7'd23 || filter_counter ==7'd31 || filter_counter ==7'd39 || filter_counter ==7'd47 || filter_counter==7'd55)begin
+				//R channel
+				m11_r_w = input_img[filter_counter-9][7:0];
+				m21_r_w = input_img[filter_counter-1][7:0];
+				m31_r_w = input_img[filter_counter+7][7:0];
+
+				m12_r_w = input_img[filter_counter-8][7:0];
+				m22_r_w = input_img[filter_counter][7:0];
+				m32_r_w = input_img[filter_counter+8][7:0];
+
+				m13_r_w = 8'b0000_0000;
+				m23_r_w = 8'b0000_0000;
+				m33_r_w = 8'b0000_0000;
+
+				next_filter_img[filter_counter][7:0] = answer_r;
+
+				//G channel
+				m11_g_w = input_img[filter_counter-9][15:8];
+				m21_g_w = input_img[filter_counter-1][15:8];
+				m31_g_w = input_img[filter_counter+7][15:8];
+
+				m12_g_w = input_img[filter_counter-8][15:8];
+				m22_g_w = input_img[filter_counter][15:8];
+				m32_g_w = input_img[filter_counter+8][15:8];
+
+				m13_g_w = 8'b0000_0000;
+				m23_g_w = 8'b0000_0000;
+				m33_g_w = 8'b0000_0000;
+
+				next_filter_img[filter_counter][15:8] = answer_g;
+
+				//B channel
+				m11_b_w = input_img[filter_counter-9][23:16];
+				m21_b_w = input_img[filter_counter-1][23:16];
+				m31_b_w = input_img[filter_counter+7][23:16];
+
+				m12_b_w = input_img[filter_counter-8][23:16];
+				m22_b_w = input_img[filter_counter][23:16];
+				m32_b_w = input_img[filter_counter+8][23:16];
+
+				m13_b_w = 8'b0000_0000;
+				m23_b_w = 8'b0000_0000;
+				m33_b_w = 8'b0000_0000;
+
+				next_filter_img[filter_counter][23:16] = answer_b;
+				
+			end
+			else if(filter_counter ==7'd57 || filter_counter ==7'd58 || filter_counter ==7'd59 || filter_counter ==7'd60 || filter_counter ==7'd61 || filter_counter==7'd62)begin
+				//R channel
+				m11_r_w = input_img[filter_counter-9][7:0];
+				m21_r_w = input_img[filter_counter-1][7:0];
+				m31_r_w = 8'b0000_0000;
+
+				m12_r_w = input_img[filter_counter-8][7:0];
+				m22_r_w = input_img[filter_counter][7:0];
+				m32_r_w = 8'b0000_0000;
+
+				m13_r_w = input_img[filter_counter-7][7:0];
+				m23_r_w = input_img[filter_counter+1][7:0];
+				m33_r_w = 8'b0000_0000;
+
+				next_filter_img[filter_counter][7:0] = answer_r;
+
+				//G channel
+				m11_g_w = input_img[filter_counter-9][15:8];
+				m21_g_w = input_img[filter_counter-1][15:8];
+				m31_g_w = 8'b0000_0000;
+
+				m12_g_w = input_img[filter_counter-8][15:8];
+				m22_g_w = input_img[filter_counter][15:8];
+				m32_g_w = 8'b0000_0000;
+
+				m13_g_w = input_img[filter_counter-7][15:8];
+				m23_g_w = input_img[filter_counter+1][15:8];
+				m33_g_w = 8'b0000_0000;
+
+				next_filter_img[filter_counter][15:8] = answer_g;
+
+				//B channel
+				m11_b_w = input_img[filter_counter-9][23:16];
+				m21_b_w = input_img[filter_counter-1][23:16];
+				m31_b_w = 8'b0000_0000;
+
+				m12_b_w = input_img[filter_counter-8][23:16];
+				m22_b_w = input_img[filter_counter][23:16];
+				m32_b_w = 8'b0000_0000;
+
+				m13_b_w = input_img[filter_counter-7][23:16];
+				m23_b_w = input_img[filter_counter+1][23:16];
+				m33_b_w = 8'b0000_0000;
+
+				next_filter_img[filter_counter][23:16] = answer_b;
+			end
+			else begin
+				//R channel
+				m11_r_w = input_img[filter_counter-9][7:0];
+				m21_r_w = input_img[filter_counter-1][7:0];
+				m31_r_w = input_img[filter_counter+7][7:0];
+
+				m12_r_w = input_img[filter_counter-8][7:0];
+				m22_r_w = input_img[filter_counter][7:0];
+				m32_r_w = input_img[filter_counter+8][7:0];
+
+				m13_r_w = input_img[filter_counter-7][7:0];
+				m23_r_w = input_img[filter_counter+1][7:0];
+				m33_r_w = input_img[filter_counter+9][7:0];
+
+				next_filter_img[filter_counter][7:0] = answer_r;
+
+				//G channel
+				m11_g_w = input_img[filter_counter-9][15:8];
+				m21_g_w = input_img[filter_counter-1][15:8];
+				m31_g_w = input_img[filter_counter+7][15:8];
+
+				m12_g_w = input_img[filter_counter-8][15:8];
+				m22_g_w = input_img[filter_counter][15:8];
+				m32_g_w = input_img[filter_counter+8][15:8];
+
+				m13_g_w = input_img[filter_counter-7][15:8];
+				m23_g_w = input_img[filter_counter+1][15:8];
+				m33_g_w = input_img[filter_counter+9][15:8];
+
+				next_filter_img[filter_counter][15:8] = answer_g;
+
+				//B channel
+				m11_b_w = input_img[filter_counter-9][23:16];
+				m21_b_w = input_img[filter_counter-1][23:16];
+				m31_b_w = input_img[filter_counter+7][23:16];
+
+				m12_b_w = input_img[filter_counter-8][23:16];
+				m22_b_w = input_img[filter_counter][23:16];
+				m32_b_w = input_img[filter_counter+8][23:16];
+
+				m13_b_w = input_img[filter_counter-7][23:16];
+				m23_b_w = input_img[filter_counter+1][23:16];
+				m33_b_w = input_img[filter_counter+9][23:16];
+
+				next_filter_img[filter_counter][23:16] = answer_b;
+			end
+			next_filter_counter = filter_counter + 7'b000_0001;
+			next_fsm_state = fsm_state;
+		end
+		else begin
+			next_filter_counter = 0;
+			next_fsm_state = 3'b110;
+
+			//latch
+			m11_r_w	= 0;
+			m21_r_w	= 0;	
+			m31_r_w = 0;
+
+			m12_r_w = 0;
+			m22_r_w = 0;
+			m32_r_w = 0;
+
+			m13_r_w = 0;
+			m23_r_w = 0;
+			m33_r_w = 0;
+
+			m11_g_w	= 0;
+			m21_g_w	= 0;	
+			m31_g_w = 0;
+
+			m12_g_w = 0;
+			m22_g_w = 0;
+			m32_g_w = 0;
+
+			m13_g_w = 0;
+			m23_g_w = 0;
+			m33_g_w = 0;
+
+			m11_b_w	= 0;
+			m21_b_w	= 0;	
+			m31_b_w = 0;
+
+			m12_b_w = 0;
+			m22_b_w = 0;
+			m32_b_w = 0;
+
+			m13_b_w = 0;
+			m23_b_w = 0;
+			m33_b_w = 0;
+		end
+
+	end
+	3'b110:begin
+		for(latch_5=0; latch_5<64; latch_5=latch_5+1) next_input_img[latch_5] = filter_img[latch_5];
+		next_fsm_state = 3'b001;
+		o_out_valid_w = 1'b1;
+
+		//latch
+		m11_r_w	= 0;
+		m21_r_w	= 0;	
+		m31_r_w = 0;
+
+		m12_r_w = 0;
+		m22_r_w = 0;
+		m32_r_w = 0;
+
+		m13_r_w = 0;
+		m23_r_w = 0;
+		m33_r_w = 0;
+
+		m11_g_w	= 0;
+		m21_g_w	= 0;	
+		m31_g_w = 0;
+
+		m12_g_w = 0;
+		m22_g_w = 0;
+		m32_g_w = 0;
+
+		m13_g_w = 0;
+		m23_g_w = 0;
+		m33_g_w = 0;
+
+		m11_b_w	= 0;
+		m21_b_w	= 0;	
+		m31_b_w = 0;
+
+		m12_b_w = 0;
+		m22_b_w = 0;
+		m32_b_w = 0;
+
+		m13_b_w = 0;
+		m23_b_w = 0;
+		m33_b_w = 0;
+	end
+	
 	default:begin
 		//do no operation
 		next_fsm_state = 3'b001;
@@ -1303,7 +1712,7 @@ always@(*)begin
 		m23_b_w = 0;
 		m33_b_w = 0;
 
-		//for(latch_5=0; latch_5 <64;latch_5 = latch_5 + 1) next_input_img[latch_5] = input_img[latch_5];
+		
 	end
 	endcase
 end
@@ -1380,8 +1789,8 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 		for(s=0; s<64; s=s+1) current_ycbcr_img[s] <= 0;
 		for(t=0; t<64; t=t+1) next_current_ycbcr_img[t] <= 0;
 
-		
-
+		filter_counter <= 0;
+		for(latch_4=0;latch_4<64;latch_4=latch_4+1) filter_img[latch_4] <=0;
 
 		//---memory-----
 		sram_wen_w <= 0;
@@ -1396,6 +1805,9 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 		output_counter <= next_output_counter;
 		ycbcr_mode <= next_ycbcr_mode;
 		for(kk=0; kk<64; kk=kk+1) input_img[kk] <= next_input_img[kk];
+		
+		filter_counter <= next_filter_counter;
+		for(latch_6=0; latch_6 <64;latch_6 = latch_6 + 1) filter_img[latch_6] <= next_filter_img[latch_6];
 
 		//----memory---
 		sram_wen_w <= next_sram_wen_w;
@@ -1405,26 +1817,6 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 
 	end	
 end
-
-/*always@(negedge i_clk)begin
-	register_no <= next_register_no;
-end
-
-always@(negedge i_clk)begin
-	origin_point <= next_origin_point;
-end
-
-always@(negedge i_clk)begin
-	output_counter <= next_output_counter;
-end
-
-always@(negedge i_clk)begin
-	for(kk=0; kk<64; kk=kk+1) input_img[kk] <= next_input_img[kk];
-end*/
-
-
-
-
 
 
 endmodule
@@ -1444,7 +1836,10 @@ module sort_3_number(
 
 );
 
-reg [7:0] next_max,next_mid,next_min;
+reg [7:0] next_max;
+reg [7:0] next_mid;
+reg [7:0] next_min;
+
 assign max = next_max;
 assign mid = next_mid;
 assign min = next_min;

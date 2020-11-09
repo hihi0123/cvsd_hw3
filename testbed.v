@@ -215,7 +215,7 @@ module testbed;
             status <= status_w;
 
 
-            if(out_valid) begin
+            if(out_valid && (op_mode!=5) && (op_mode!=6) && (op_mode!=7)) begin
                 if(out_data!=golden_mem[g_idx]) begin
                     if((op_mode!=0) && (op_mode!=5) && (op_mode!=6) && (op_mode!=7)) begin
                         $display("================================================================================");
