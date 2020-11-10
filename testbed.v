@@ -1,5 +1,5 @@
 `timescale 1ns/100ps
-`define CYCLE       10.0     // CLK period.
+`define CYCLE       100.0     // CLK period.
 `define HCYCLE      (`CYCLE/2)
 `define MAX_CYCLE   10000
 `define RST_DELAY   5
@@ -113,6 +113,7 @@ module testbed;
         rst_n = 1; # (               0.25 * `CYCLE);
         rst_n = 0; # ((`RST_DELAY - 0.25) * `CYCLE);
         rst_n = 1; # (         `MAX_CYCLE * `CYCLE);
+        $display("the last op mode is %d", op_mode);
         $display("Error! Runtime exceeded!");
         $finish;
     end
@@ -216,7 +217,7 @@ module testbed;
 
 
             if(out_valid && (op_mode!=5) && (op_mode!=6) && (op_mode!=7)) begin
-                if(out_data!=golden_mem[g_idx]) begin
+                if(out_data!==golden_mem[g_idx]) begin
                     if((op_mode!=0) && (op_mode!=5) && (op_mode!=6) && (op_mode!=7)) begin
                         $display("================================================================================");
                         $display(" op_idx: %d,\n op_mode: %d,\n golden_idx: %d\n ERROR!", op_idx, op_mode, g_idx );

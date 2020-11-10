@@ -1,0 +1,11 @@
+StudentID: R08921105
+
+Clock period: 50(ns)
+
+Area : 843083.075150 (um2)
+
+Latency:
+    tb0:  (cycle)
+    tb1:  (cycle)
+    tb2:  (cycle)
+

@@ -1,0 +1,60 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'ipdc' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+Warning: There are infeasible paths detected in your design that were ignored during optimization. Please run 'report_timing -attributes' and/or 'create_qor_snapshot/query_qor_snapshot -infeasible_paths' to identify these paths.  (OPT-1721)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : ipdc
+Version: N-2017.09-SP2
+Date   : Tue Nov 10 10:51:14 2020
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: i_op_mode[2]
+              (input port clocked by i_clk)
+  Endpoint: origin_point_reg[5]
+            (falling edge-triggered flip-flop clocked by i_clk)
+  Path Group: i_clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  ipdc               tsmc13_wl10           slow
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock i_clk (rise edge)                  0.00       0.00
+  clock network delay (ideal)              0.50       0.50
+  input external delay                    25.00      25.50 r
+  i_op_mode[2] (in)                        0.00      25.50 r
+  U13161/Y (CLKINVX1)                      0.47      25.97 f
+  U13082/Y (NAND3X8)                       0.28      26.25 r
+  U67183/Y (NOR3X8)                        0.14      26.39 f
+  U12523/Y (NAND2X8)                       0.12      26.51 r
+  U67172/Y (INVX4)                         0.06      26.57 f
+  U67186/Y (AOI32X2)                       0.26      26.82 r
+  U67187/Y (NAND2X2)                       0.11      26.94 f
+  origin_point_reg[5]/D (DFFNSRX2)         0.00      26.94 f
+  data arrival time                                  26.94
+
+  clock i_clk (fall edge)                 25.00      25.00
+  clock network delay (ideal)              0.50      25.50
+  clock uncertainty                       -0.10      25.40
+  origin_point_reg[5]/CKN (DFFNSRX2)       0.00      25.40 f
+  library setup time                      -0.18      25.22
+  data required time                                 25.22
+  -----------------------------------------------------------
+  data required time                                 25.22
+  data arrival time                                 -26.94
+  -----------------------------------------------------------
+  slack (VIOLATED)                                   -1.72
+
+
+1

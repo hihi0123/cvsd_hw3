@@ -133,7 +133,11 @@ wire [7:0] answer_r;
 reg [7:0] m11_r_w, m21_r_w, m31_r_w;
 reg [7:0] m12_r_w, m22_r_w, m32_r_w;
 reg [7:0] m13_r_w, m23_r_w, m33_r_w;
-
+/*
+reg [7:0] next_m11_r_w, next_m21_r_w, next_m31_r_w;
+reg [7:0] next_m12_r_w, next_m22_r_w, next_m32_r_w;
+reg [7:0] next_m13_r_w, next_m23_r_w, next_m33_r_w;
+*/
 //G channel declaration
 wire [7:0] m11_g, m21_g, m31_g;
 wire [7:0] m12_g, m22_g, m32_g;
@@ -143,7 +147,11 @@ wire [7:0] answer_g;
 reg [7:0] m11_g_w, m21_g_w, m31_g_w;
 reg [7:0] m12_g_w, m22_g_w, m32_g_w;
 reg [7:0] m13_g_w, m23_g_w, m33_g_w;
-
+/*
+reg [7:0] next_m11_g_w, next_m21_g_w, next_m31_g_w;
+reg [7:0] next_m12_g_w, next_m22_g_w, next_m32_g_w;
+reg [7:0] next_m13_g_w, next_m23_g_w, next_m33_g_w;
+*/
 //B channel declaration
 wire [7:0] m11_b, m21_b, m31_b;
 wire [7:0] m12_b, m22_b, m32_b;
@@ -153,8 +161,11 @@ wire [7:0] answer_b;
 reg [7:0] m11_b_w, m21_b_w, m31_b_w;
 reg [7:0] m12_b_w, m22_b_w, m32_b_w;
 reg [7:0] m13_b_w, m23_b_w, m33_b_w;
-
-
+/*
+reg [7:0] next_m11_b_w, next_m21_b_w, next_m31_b_w;
+reg [7:0] next_m12_b_w, next_m22_b_w, next_m32_b_w;
+reg [7:0] next_m13_b_w, next_m23_b_w, next_m33_b_w;
+*/
 //R channel assing
 assign m11_r = m11_r_w;
 assign m21_r = m21_r_w;
@@ -167,6 +178,9 @@ assign m32_r = m32_r_w;
 assign m13_r = m13_r_w;
 assign m23_r = m23_r_w;
 assign m33_r = m33_r_w;
+
+
+
 
 //G channel assign
 assign m11_g = m11_g_w;
@@ -285,7 +299,43 @@ always@(*)begin
 	
 	next_filter_counter = filter_counter;
 	for(latch_3=0;latch_3<64;latch_3 = latch_3+1) next_filter_img[latch_3] = filter_img[latch_3];
+/*
+	next_m11_r_w = m11_r_w ;
+	next_m21_r_w = m21_r_w ;	
+	next_m31_r_w = m31_r_w ;
 
+	next_m12_r_w = m12_r_w ;
+	next_m22_r_w = m22_r_w ;
+	next_m32_r_w = m32_r_w;
+
+	next_m13_r_w = m13_r_w;
+	next_m23_r_w = m23_r_w;
+	next_m33_r_w = m33_r_w;
+
+	next_m11_g_w = m11_g_w;
+	next_m21_g_w = m21_g_w;	
+	next_m31_g_w = m31_g_w;
+
+	next_m12_g_w = m12_g_w;
+	next_m22_g_w = m22_g_w;
+	next_m32_g_w = m32_g_w;
+
+	next_m13_g_w = m13_g_w;
+	next_m23_g_w = m23_g_w;
+	next_m33_g_w = m33_g_w;
+
+	next_m11_b_w = m11_b_w;
+	next_m21_b_w = m21_b_w;	
+	next_m31_b_w = m31_b_w;
+
+	next_m12_b_w = m12_b_w;
+	next_m22_b_w = m22_b_w;
+	next_m32_b_w = m32_b_w;
+
+	next_m13_b_w = m13_b_w;
+	next_m23_b_w = m23_b_w;
+	next_m33_b_w = m33_b_w;
+*/
 	next_sram_wen_w = sram_wen_w;
 	next_sram_d_w = sram_d_w;
 	next_sram_a_w = sram_a_w;
@@ -301,6 +351,7 @@ always@(*)begin
 
 		//latch
 		o_out_valid_w = 1'b0;
+		
 		m11_r_w	= 0;
 		m21_r_w	= 0;	
 		m31_r_w = 0;
@@ -336,7 +387,7 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
-			
+		
 	end
 	3'b001:begin
 		//after loading finished,need to reset the o_out_valid_w
@@ -385,7 +436,7 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
-
+				
 				
 			end
 			3'b001:begin
@@ -401,6 +452,7 @@ always@(*)begin
 				next_fsm_state = 3'b100;
 
 				//latch
+				
 				m11_r_w	= 0;
 				m21_r_w	= 0;	
 				m31_r_w = 0;
@@ -436,6 +488,7 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				
 				
 				//for(latch_7=0; latch_7 <64;latch_7 = latch_7 + 1) next_input_img[latch_7] = input_img[latch_7];
 
@@ -453,6 +506,7 @@ always@(*)begin
 				next_fsm_state = 3'b100;
 
 				//latch
+				
 				m11_r_w	= 0;
 				m21_r_w	= 0;	
 				m31_r_w = 0;
@@ -488,6 +542,8 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				
+
 				//for(latch_8=0; latch_8 <64;latch_8 = latch_8 + 1) next_input_img[latch_8] = input_img[latch_8];
 			end
 			3'b011:begin
@@ -497,6 +553,7 @@ always@(*)begin
 				next_fsm_state = 3'b100;
 
 				//latch
+				
 				m11_r_w	= 0;
 				m21_r_w	= 0;	
 				m31_r_w = 0;
@@ -532,6 +589,8 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				
+
 				//for(latch_9=0; latch_9 <64;latch_9 = latch_9 + 1) next_input_img[latch_9] = input_img[latch_9];
 
 			end
@@ -541,6 +600,7 @@ always@(*)begin
 				next_fsm_state = 3'b100;
 
 				//latch
+				
 				m11_r_w	= 0;
 				m21_r_w	= 0;	
 				m31_r_w = 0;
@@ -576,12 +636,13 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
-
+				
 				//for(latch_11=0; latch_11 <64;latch_11 = latch_11 + 1) next_input_img[latch_11] = input_img[latch_11];
 
 			end
 			3'b101:begin
 				//median filter, no display
+				
 				m11_r_w	= 0;
 				m21_r_w	= 0;	
 				m31_r_w = 0;
@@ -617,6 +678,8 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				
+
 			/*	for(f_r=0;f_r<64;f_r=f_r+1)begin
 					if(f_r==0 || f_r==7 || f_r==56 || f_r==63)begin
 						next_input_img[f_r] = 0;		
@@ -915,6 +978,7 @@ always@(*)begin
 				next_fsm_state = 3'b001;		
 
 				//latch
+				
 				m11_r_w	= 0;
 				m21_r_w	= 0;	
 				m31_r_w = 0;
@@ -950,6 +1014,7 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				
 
 				//for(latch_12=0; latch_12 <64;latch_12 = latch_12 + 1) next_input_img[latch_12] = input_img[latch_12];
 
@@ -961,6 +1026,7 @@ always@(*)begin
 				next_fsm_state = 3'b001;
 
 				//latch
+				
 				m11_r_w	= 0;
 				m21_r_w	= 0;	
 				m31_r_w = 0;
@@ -996,6 +1062,8 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+				
+
 				//for(latch_13=0; latch_13 <64;latch_13 = latch_13 + 1) next_input_img[latch_13] = input_img[latch_13];
 			end
 			endcase
@@ -1005,6 +1073,7 @@ always@(*)begin
 			next_fsm_state = 3'b001;
 
 			//latch
+			
 		m11_r_w	= 0;
 		m21_r_w	= 0;	
 		m31_r_w = 0;
@@ -1041,6 +1110,7 @@ always@(*)begin
 		m23_b_w = 0;
 		m33_b_w = 0;
 		
+
 		//for(latch_14=0; latch_14 <64;latch_14 = latch_14 + 1) next_input_img[latch_14] = input_img[latch_14];
 
 		end
@@ -1072,6 +1142,7 @@ always@(*)begin
 		o_out_valid_w = 1'b0;
 
 		//latch
+		
 		m11_r_w	= 0;
 		m21_r_w	= 0;	
 		m31_r_w = 0;
@@ -1107,7 +1178,7 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
-
+		
 		
 
 	end
@@ -1117,6 +1188,7 @@ always@(*)begin
 		next_fsm_state = 3'b001;
 
 		//latch
+		
 		m11_r_w	= 0;
 		m21_r_w	= 0;	
 		m31_r_w = 0;
@@ -1152,7 +1224,7 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
-
+		
 		
 	end
 	3'b100:begin  //output 16 cycles
@@ -1268,6 +1340,7 @@ always@(*)begin
 		end
 
 		//latch
+		
 		m11_r_w	= 0;
 		m21_r_w	= 0;	
 		m31_r_w = 0;
@@ -1633,6 +1706,7 @@ always@(*)begin
 		o_out_valid_w = 1'b1;
 
 		//latch
+		
 		m11_r_w	= 0;
 		m21_r_w	= 0;	
 		m31_r_w = 0;
@@ -1668,6 +1742,7 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+		
 	end
 	
 	default:begin
@@ -1792,6 +1867,44 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 		filter_counter <= 0;
 		for(latch_4=0;latch_4<64;latch_4=latch_4+1) filter_img[latch_4] <=0;
 
+		/*
+		m11_r_w	<= 0;
+		m21_r_w	<= 0;	
+		m31_r_w <= 0;
+
+		m12_r_w <= 0;
+		m22_r_w <= 0;
+		m32_r_w <= 0;
+
+		m13_r_w <= 0;
+		m23_r_w <= 0;
+		m33_r_w <= 0;
+
+		m11_g_w	<= 0;
+		m21_g_w	<= 0;	
+		m31_g_w <= 0;
+
+		m12_g_w <= 0;
+		m22_g_w <= 0;
+		m32_g_w <= 0;
+
+		m13_g_w <= 0;
+		m23_g_w <= 0;
+		m33_g_w <= 0;
+
+		m11_b_w	<= 0;
+		m21_b_w	<= 0;	
+		m31_b_w <= 0;
+
+		m12_b_w <= 0;
+		m22_b_w <= 0;
+		m32_b_w <= 0;
+
+		m13_b_w <= 0;
+		m23_b_w <= 0;
+		m33_b_w <= 0;
+		*/
+
 		//---memory-----
 		sram_wen_w <= 0;
 		sram_a_w <= 0;
@@ -1808,6 +1921,44 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 		
 		filter_counter <= next_filter_counter;
 		for(latch_6=0; latch_6 <64;latch_6 = latch_6 + 1) filter_img[latch_6] <= next_filter_img[latch_6];
+		/*
+		m11_r_w	<= next_m11_r_w;
+		m21_r_w	<= next_m21_r_w;	
+		m31_r_w <= next_m31_r_w;
+
+		m12_r_w <= next_m12_r_w;
+		m22_r_w <= next_m22_r_w;
+		m32_r_w <= next_m32_r_w;
+
+		m13_r_w <= next_m13_r_w;
+		m23_r_w <= next_m23_r_w;
+		m33_r_w <= next_m33_r_w;
+
+		m11_g_w	<= next_m11_g_w;
+		m21_g_w	<= next_m21_g_w;	
+		m31_g_w <= next_m31_g_w;
+
+		m12_g_w <= next_m12_g_w;
+		m22_g_w <= next_m22_g_w;
+		m32_g_w <= next_m32_g_w;
+
+		m13_g_w <= next_m13_g_w;
+		m23_g_w <= next_m23_g_w;
+		m33_g_w <= next_m33_g_w;
+
+		m11_b_w	<= next_m11_b_w;
+		m21_b_w	<= next_m21_b_w;	
+		m31_b_w <= next_m31_b_w;
+
+		m12_b_w <= next_m12_b_w;
+		m22_b_w <= next_m22_b_w;
+		m32_b_w <= next_m32_b_w;
+
+		m13_b_w <= next_m13_b_w;
+		m23_b_w <= next_m23_b_w;
+		m33_b_w <= next_m33_b_w;
+		*/
+
 
 		//----memory---
 		sram_wen_w <= next_sram_wen_w;
@@ -1824,6 +1975,8 @@ endmodule
 
 // modules for choose the median
 //moduele for only 3 numbers
+//------------------------
+
 module sort_3_number(
 
 	input [7:0] num1,
@@ -1927,9 +2080,9 @@ sort_3_number column_2(
 	.num2(i_position_2_2),
 	.num3(i_position_3_2),
 	
-	.max(temp_1_1),
-	.mid(temp_2_1),
-	.min(temp_3_1)
+	.max(temp_1_2),
+	.mid(temp_2_2),
+	.min(temp_3_2)
 );
 
 sort_3_number column_3(
@@ -1979,7 +2132,6 @@ sort_3_number last_sort(
 	.min(last_min)
 );
 
-
+assign median = last_mid;
 endmodule
 
-//#############################################
