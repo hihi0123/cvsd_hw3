@@ -980,8 +980,8 @@ always@(*)begin
 			3'b110:begin
 				//YcbCr, no display
 				next_ycbcr_mode = 1'b1;	
-				o_out_valid_w = 1'b1;
-				next_fsm_state = 3'b001;		
+				o_out_valid_w = 1'b0;
+				next_fsm_state = 3'b011;		
 
 				//latch
 				
@@ -1028,8 +1028,8 @@ always@(*)begin
 			3'b111:begin
 				//RGB mode no display
 				next_ycbcr_mode = 1'b0;
-				o_out_valid_w = 1'b1;
-				next_fsm_state = 3'b001;
+				o_out_valid_w = 1'b0;
+				next_fsm_state = 3'b011;
 
 				//latch
 				
