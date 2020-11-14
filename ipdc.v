@@ -86,7 +86,7 @@ reg ycbcr_mode;
 reg next_ycbcr_mode;
 
 reg [23:0] current_ycbcr_img [0:63];
-reg [23:0] next_current_ycbcr_img [0:63];
+//reg [23:0] next_current_ycbcr_img [0:63];
 
 //for median filter
 integer f_r,f_g, f_b;
@@ -357,6 +357,29 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+
+		for(n=0;n<64;n=n+1)begin
+			yr[n] = 0;
+			yg_1[n] = 0;
+			yg_2[n] = 0;
+			y_sum[n] = 0;
+			y_sum_round[n] = 0;
+
+			cb_r[n] = 0;
+			cb_g[n] = 0;
+			cb_b[n] = 0;
+			cb_sum[n] = 0;
+			cb_sum_round[n] = 0;
+
+			cr_r[n] = 0;
+			cr_g1[n] = 0; 
+			cr_g2[n] = 0;
+			cr_b[n] = 0;
+			cr_sum[n] = 0;
+			cr_sum_round[n] = 0;
+
+			current_ycbcr_img[n] = 0;
+		end
 		
 	end
 	3'b001:begin
@@ -407,6 +430,28 @@ always@(*)begin
 				m23_b_w = 0;
 				m33_b_w = 0;
 				
+				for(n=0;n<64;n=n+1)begin
+				yr[n] = 0;
+				yg_1[n] = 0;
+				yg_2[n] = 0;
+				y_sum[n] = 0;
+				y_sum_round[n] = 0;
+
+				cb_r[n] = 0;
+				cb_g[n] = 0;
+				cb_b[n] = 0;
+				cb_sum[n] = 0;
+				cb_sum_round[n] = 0;
+
+				cr_r[n] = 0;
+				cr_g1[n] = 0; 
+				cr_g2[n] = 0;
+				cr_b[n] = 0;
+				cr_sum[n] = 0;
+				cr_sum_round[n] = 0;
+
+				current_ycbcr_img[n] = 0;
+				end
 				
 			end
 			3'b001:begin
@@ -458,6 +503,29 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+
+				for(n=0;n<64;n=n+1)begin
+				yr[n] = 0;
+				yg_1[n] = 0;
+				yg_2[n] = 0;
+				y_sum[n] = 0;
+				y_sum_round[n] = 0;
+
+				cb_r[n] = 0;
+				cb_g[n] = 0;
+				cb_b[n] = 0;
+				cb_sum[n] = 0;
+				cb_sum_round[n] = 0;
+
+				cr_r[n] = 0;
+				cr_g1[n] = 0; 
+				cr_g2[n] = 0;
+				cr_b[n] = 0;
+				cr_sum[n] = 0;
+				cr_sum_round[n] = 0;
+
+				current_ycbcr_img[n] = 0;
+				end
 				
 				
 				//for(latch_7=0; latch_7 <64;latch_7 = latch_7 + 1) next_input_img[latch_7] = input_img[latch_7];
@@ -512,6 +580,29 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+
+				for(n=0;n<64;n=n+1)begin
+				yr[n] = 0;
+				yg_1[n] = 0;
+				yg_2[n] = 0;
+				y_sum[n] = 0;
+				y_sum_round[n] = 0;
+
+				cb_r[n] = 0;
+				cb_g[n] = 0;
+				cb_b[n] = 0;
+				cb_sum[n] = 0;
+				cb_sum_round[n] = 0;
+
+				cr_r[n] = 0;
+				cr_g1[n] = 0; 
+				cr_g2[n] = 0;
+				cr_b[n] = 0;
+				cr_sum[n] = 0;
+				cr_sum_round[n] = 0;
+
+				current_ycbcr_img[n] = 0;
+				end
 				
 
 				//for(latch_8=0; latch_8 <64;latch_8 = latch_8 + 1) next_input_img[latch_8] = input_img[latch_8];
@@ -559,6 +650,29 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+
+				for(n=0;n<64;n=n+1)begin
+				yr[n] = 0;
+				yg_1[n] = 0;
+				yg_2[n] = 0;
+				y_sum[n] = 0;
+				y_sum_round[n] = 0;
+
+				cb_r[n] = 0;
+				cb_g[n] = 0;
+				cb_b[n] = 0;
+				cb_sum[n] = 0;
+				cb_sum_round[n] = 0;
+
+				cr_r[n] = 0;
+				cr_g1[n] = 0; 
+				cr_g2[n] = 0;
+				cr_b[n] = 0;
+				cr_sum[n] = 0;
+				cr_sum_round[n] = 0;
+
+				current_ycbcr_img[n] = 0;
+				end
 				
 
 				//for(latch_9=0; latch_9 <64;latch_9 = latch_9 + 1) next_input_img[latch_9] = input_img[latch_9];
@@ -606,6 +720,29 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+
+				for(n=0;n<64;n=n+1)begin
+				yr[n] = 0;
+				yg_1[n] = 0;
+				yg_2[n] = 0;
+				y_sum[n] = 0;
+				y_sum_round[n] = 0;
+
+				cb_r[n] = 0;
+				cb_g[n] = 0;
+				cb_b[n] = 0;
+				cb_sum[n] = 0;
+				cb_sum_round[n] = 0;
+
+				cr_r[n] = 0;
+				cr_g1[n] = 0; 
+				cr_g2[n] = 0;
+				cr_b[n] = 0;
+				cr_sum[n] = 0;
+				cr_sum_round[n] = 0;
+
+				current_ycbcr_img[n] = 0;
+				end
 				
 				//for(latch_11=0; latch_11 <64;latch_11 = latch_11 + 1) next_input_img[latch_11] = input_img[latch_11];
 
@@ -649,6 +786,28 @@ always@(*)begin
 				m23_b_w = 0;
 				m33_b_w = 0;
 				
+				for(n=0;n<64;n=n+1)begin
+				yr[n] = 0;
+				yg_1[n] = 0;
+				yg_2[n] = 0;
+				y_sum[n] = 0;
+				y_sum_round[n] = 0;
+
+				cb_r[n] = 0;
+				cb_g[n] = 0;
+				cb_b[n] = 0;
+				cb_sum[n] = 0;
+				cb_sum_round[n] = 0;
+
+				cr_r[n] = 0;
+				cr_g1[n] = 0; 
+				cr_g2[n] = 0;
+				cr_b[n] = 0;
+				cr_sum[n] = 0;
+				cr_sum_round[n] = 0;
+
+				current_ycbcr_img[n] = 0;
+				end
 
 			
 				next_fsm_state = 3'b101;
@@ -697,6 +856,29 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+
+				for(n=0;n<64;n=n+1)begin
+				yr[n] = 0;
+				yg_1[n] = 0;
+				yg_2[n] = 0;
+				y_sum[n] = 0;
+				y_sum_round[n] = 0;
+
+				cb_r[n] = 0;
+				cb_g[n] = 0;
+				cb_b[n] = 0;
+				cb_sum[n] = 0;
+				cb_sum_round[n] = 0;
+
+				cr_r[n] = 0;
+				cr_g1[n] = 0; 
+				cr_g2[n] = 0;
+				cr_b[n] = 0;
+				cr_sum[n] = 0;
+				cr_sum_round[n] = 0;
+
+				current_ycbcr_img[n] = 0;
+				end
 				
 
 				//for(latch_12=0; latch_12 <64;latch_12 = latch_12 + 1) next_input_img[latch_12] = input_img[latch_12];
@@ -745,6 +927,29 @@ always@(*)begin
 				m13_b_w = 0;
 				m23_b_w = 0;
 				m33_b_w = 0;
+
+				for(n=0;n<64;n=n+1)begin
+				yr[n] = 0;
+				yg_1[n] = 0;
+				yg_2[n] = 0;
+				y_sum[n] = 0;
+				y_sum_round[n] = 0;
+
+				cb_r[n] = 0;
+				cb_g[n] = 0;
+				cb_b[n] = 0;
+				cb_sum[n] = 0;
+				cb_sum_round[n] = 0;
+
+				cr_r[n] = 0;
+				cr_g1[n] = 0; 
+				cr_g2[n] = 0;
+				cr_b[n] = 0;
+				cr_sum[n] = 0;
+				cr_sum_round[n] = 0;
+
+				current_ycbcr_img[n] = 0;
+				end
 				
 
 				//for(latch_13=0; latch_13 <64;latch_13 = latch_13 + 1) next_input_img[latch_13] = input_img[latch_13];
@@ -792,6 +997,29 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+
+		for(n=0;n<64;n=n+1)begin
+		yr[n] = 0;
+		yg_1[n] = 0;
+		yg_2[n] = 0;
+		y_sum[n] = 0;
+		y_sum_round[n] = 0;
+
+		cb_r[n] = 0;
+		cb_g[n] = 0;
+		cb_b[n] = 0;
+		cb_sum[n] = 0;
+		cb_sum_round[n] = 0;
+
+		cr_r[n] = 0;
+		cr_g1[n] = 0; 
+		cr_g2[n] = 0;
+		cr_b[n] = 0;
+		cr_sum[n] = 0;
+		cr_sum_round[n] = 0;
+
+		current_ycbcr_img[n] = 0;
+		end
 		
 
 		//for(latch_14=0; latch_14 <64;latch_14 = latch_14 + 1) next_input_img[latch_14] = input_img[latch_14];
@@ -862,6 +1090,28 @@ always@(*)begin
 		m23_b_w = 0;
 		m33_b_w = 0;
 		
+		for(n=0;n<64;n=n+1)begin
+		yr[n] = 0;
+		yg_1[n] = 0;
+		yg_2[n] = 0;
+		y_sum[n] = 0;
+		y_sum_round[n] = 0;
+
+		cb_r[n] = 0;
+		cb_g[n] = 0;
+		cb_b[n] = 0;
+		cb_sum[n] = 0;
+		cb_sum_round[n] = 0;
+
+		cr_r[n] = 0;
+		cr_g1[n] = 0; 
+		cr_g2[n] = 0;
+		cr_b[n] = 0;
+		cr_sum[n] = 0;
+		cr_sum_round[n] = 0;
+
+		current_ycbcr_img[n] = 0;
+		end
 		
 
 	end
@@ -907,6 +1157,29 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+
+		for(n=0;n<64;n=n+1)begin
+		yr[n] = 0;
+		yg_1[n] = 0;
+		yg_2[n] = 0;
+		y_sum[n] = 0;
+		y_sum_round[n] = 0;
+
+		cb_r[n] = 0;
+		cb_g[n] = 0;
+		cb_b[n] = 0;
+		cb_sum[n] = 0;
+		cb_sum_round[n] = 0;
+
+		cr_r[n] = 0;
+		cr_g1[n] = 0; 
+		cr_g2[n] = 0;
+		cr_b[n] = 0;
+		cr_sum[n] = 0;
+		cr_sum_round[n] = 0;
+
+		current_ycbcr_img[n] = 0;
+		end
 		
 		
 	end
@@ -933,6 +1206,30 @@ always@(*)begin
 				next_output_counter = 0;
 				next_fsm_state = 3'b001;
 			end
+			
+			for(n=0;n<64;n=n+1)begin
+			yr[n] = 0;
+			yg_1[n] = 0;
+			yg_2[n] = 0;
+			y_sum[n] = 0;
+			y_sum_round[n] = 0;
+
+			cb_r[n] = 0;
+			cb_g[n] = 0;
+			cb_b[n] = 0;
+			cb_sum[n] = 0;
+			cb_sum_round[n] = 0;
+
+			cr_r[n] = 0;
+			cr_g1[n] = 0; 
+			cr_g2[n] = 0;
+			cr_b[n] = 0;
+			cr_sum[n] = 0;
+			cr_sum_round[n] = 0;
+
+			current_ycbcr_img[n] = 0;
+			end
+
 		end
 		else begin    //now use ycbcr mode
 			//calculate ycbcr first
@@ -1382,6 +1679,28 @@ always@(*)begin
 			m33_b_w = 0;
 		end
 
+		for(n=0;n<64;n=n+1)begin
+		yr[n] = 0;
+		yg_1[n] = 0;
+		yg_2[n] = 0;
+		y_sum[n] = 0;
+		y_sum_round[n] = 0;
+
+		cb_r[n] = 0;
+		cb_g[n] = 0;
+		cb_b[n] = 0;
+		cb_sum[n] = 0;
+		cb_sum_round[n] = 0;
+
+		cr_r[n] = 0;
+		cr_g1[n] = 0; 
+		cr_g2[n] = 0;
+		cr_b[n] = 0;
+		cr_sum[n] = 0;
+		cr_sum_round[n] = 0;
+
+		current_ycbcr_img[n] = 0;
+		end
 	end
 	3'b110:begin
 		for(latch_5=0; latch_5<64; latch_5=latch_5+1) next_input_img[latch_5] = filter_img[latch_5];
@@ -1425,6 +1744,29 @@ always@(*)begin
 		m13_b_w = 0;
 		m23_b_w = 0;
 		m33_b_w = 0;
+
+		for(n=0;n<64;n=n+1)begin
+		yr[n] = 0;
+		yg_1[n] = 0;
+		yg_2[n] = 0;
+		y_sum[n] = 0;
+		y_sum_round[n] = 0;
+
+		cb_r[n] = 0;
+		cb_g[n] = 0;
+		cb_b[n] = 0;
+		cb_sum[n] = 0;
+		cb_sum_round[n] = 0;
+
+		cr_r[n] = 0;
+		cr_g1[n] = 0; 
+		cr_g2[n] = 0;
+		cr_b[n] = 0;
+		cr_sum[n] = 0;
+		cr_sum_round[n] = 0;
+
+		current_ycbcr_img[n] = 0;
+		end
 		
 	end
 	
@@ -1470,7 +1812,28 @@ always@(*)begin
 		m23_b_w = 0;
 		m33_b_w = 0;
 
-		
+		for(n=0;n<64;n=n+1)begin
+		yr[n] = 0;
+		yg_1[n] = 0;
+		yg_2[n] = 0;
+		y_sum[n] = 0;
+		y_sum_round[n] = 0;
+
+		cb_r[n] = 0;
+		cb_g[n] = 0;
+		cb_b[n] = 0;
+		cb_sum[n] = 0;
+		cb_sum_round[n] = 0;
+
+		cr_r[n] = 0;
+		cr_g1[n] = 0; 
+		cr_g2[n] = 0;
+		cr_b[n] = 0;
+		cr_sum[n] = 0;
+		cr_sum_round[n] = 0;
+
+		current_ycbcr_img[n] = 0;
+		end
 	end
 	endcase
 end
@@ -1523,6 +1886,7 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 		output_position     <= 0;
 		position_bias       <= 0;
 
+		/*
 		for(n=0; n<64;n=n+1) yr[n] <= 0; 
 		for(o=0; o<64;o=o+1) yg_1[o] <= 0; 
 		for(p=0; p<64;p=p+1) yg_2[p] <= 0;
@@ -1541,11 +1905,37 @@ always@(negedge i_clk  or negedge i_rst_n )begin
 		for(qqq=0; qqq<64;qqq=qqq+1) cr_b[qqq]  <= 0;
 		for(rrr=0; rrr<64;rrr=rrr+1) cr_sum[rrr]<= 0;
 		for(sss=0; sss<64;sss=sss+1) cr_sum_round[sss] <= 0;
+		*/
+		/* for copy
+		for(n=0;n<64;n=n+1)begin
+			yr[n] = 0;
+			yg_1[n] = 0;
+			yg_2[n] = 0;
+			y_sum[n] = 0;
+			y_sum_round[n] = 0;
+
+			cb_r[n] = 0;
+			cb_g[n] = 0;
+			cb_b[n] = 0;
+			cb_sum[n] = 0;
+			cb_sum_round[n] = 0;
+
+			cr_r[n] = 0;
+			cr_g1[n] = 0; 
+			cr_g2[n] = 0;
+			cr_b[n] = 0;
+			cr_sum[n] = 0;
+			cr_sum_round[n] = 0;
+		end
+		*/
 
 		ycbcr_mode <= 0;
-		
+
+		/*
 		for(s=0; s<64; s=s+1) current_ycbcr_img[s] <= 0;
-		for(t=0; t<64; t=t+1) next_current_ycbcr_img[t] <= 0;
+		*/
+
+		//for(t=0; t<64; t=t+1) next_current_ycbcr_img[t] <= 0;
 
 		filter_counter <= 0;
 		for(latch_4=0;latch_4<64;latch_4=latch_4+1) filter_img[latch_4] <=0;
