@@ -22,10 +22,10 @@ reg        o_out_valid_w, o_out_valid_r;
 reg [23:0] o_out_data_w, o_out_data_r;
 
 //input register
-/*reg        i_op_valid_w;
+reg        i_op_valid_w;
 reg [ 2:0] i_op_mode_w;
 reg 	   i_in_valid_w;
-reg [23:0] i_in_data_w;  */
+reg [23:0] i_in_data_w;  
 
 //store input image
 integer i;
@@ -290,6 +290,12 @@ sram_256x8 u_R_sram (
 // ---- Write your conbinational block design here ---- //
 always@(*)begin
 
+	//input register
+	i_op_valid_w = i_op_valid;
+	i_op_mode_w = i_op_mode;
+	i_in_valid_w = i_in_valid;
+	i_in_data_w = i_in_data;
+
 	for(latch_1=0; latch_1<64;latch_1 = latch_1+1) next_input_img[latch_1] = input_img[latch_1];
 	next_fsm_state = fsm_state;
 	next_register_no = register_no;
@@ -392,10 +398,10 @@ always@(*)begin
 	3'b001:begin
 		//after loading finished,need to reset the o_out_valid_w
 		o_out_valid_w = 1'b0;
-		case(i_op_valid)
+		case(i_op_valid_w)
 		1'b1:begin
-			//condition when i_op_mode is valid
-			case(i_op_mode)
+			//condition when i_op_mode_w is valid
+			case(i_op_mode_w)
 			3'b000:begin
 				//loading image, no display
 				next_fsm_state = fsm_state + 3'b001;
@@ -1069,7 +1075,7 @@ always@(*)begin
 			endcase
 		end
 		1'b0:begin
-			//condition when i_op_mode is not valid, re-choosing
+			//condition when i_op_mode_w is not valid, re-choosing
 			next_fsm_state = 3'b001;
 
 			//latch
@@ -1118,8 +1124,8 @@ always@(*)begin
 	end
 	3'b010:begin
 		//load state
-		if(i_in_valid == 1'b1)begin
-			next_input_img[register_no] = i_in_data;
+		if(i_in_valid_w == 1'b1)begin
+			next_input_img[register_no] = i_in_data_w;
 			next_register_no = register_no + 7'b0000001;			
 			next_fsm_state = 3'b010;
 			//$display("reg num. %d = %b",register_no,next_input_img[register_no]);
@@ -1127,7 +1133,7 @@ always@(*)begin
 			//------------memory operate------------
 			next_sram_wen_w = 1'b1;
 			next_sram_a_w = {{1'b0},register_no};
-			next_sram_d_w = i_in_data;
+			next_sram_d_w = i_in_data_w;
 			//--------------------------------------
 		end
 		else begin
